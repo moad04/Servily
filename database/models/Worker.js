@@ -3,9 +3,10 @@ const { userCollection } = require("./User");
 
 const workerSchema = new mongoose.Schema({
   workerType: { type: String, enum: ["company", "individual"] },
-  skills: { type: Array, required: true },
+  skills: {
+    type: [String],
+  },
   bio: { type: String },
-  rating: { type: Number, default: 0 },
   isavailable: { type: Boolean, default: true },
 });
 

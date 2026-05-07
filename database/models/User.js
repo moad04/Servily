@@ -7,6 +7,8 @@ const userSchema = new mongoose.Schema(
     googleId: { type: String },
     email: { type: String, required: true, unique: true },
     password: { type: String },
+    rating: { type: Number, default: 0 },
+    ratingCount: { type: Number, default: 0 },
     role: {
       type: String,
       enum: ["client", "worker"],
@@ -16,6 +18,12 @@ const userSchema = new mongoose.Schema(
     profilePic: { type: String },
     createdAt: { type: Date, default: Date.now },
     phone: { type: String },
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
+    emailVerificationCode: { type: String, default: null },
+    emailVerificationExpires: { type: Date, default: null },
   },
   { discriminatorKey: "role" },
 );

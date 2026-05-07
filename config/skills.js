@@ -1,0 +1,16 @@
+module.exports = [
+  "Electrician",
+  "Plumbing",
+  "Air conditioning repair",
+  "Masonry",
+  "Painting",
+  "Welding",
+  "Car mechanics",
+  "Motorcycle repair",
+  "Cleaning services",
+  "Babysitting",
+  "Tutoring",
+  "Photography",
+  "Lifting",
+  "On demand",
+];

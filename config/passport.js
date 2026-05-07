@@ -19,9 +19,6 @@ passport.use(
         let state = req.query.state;
         let action = null;
         let role = null;
-        console.log("STATE RECEIVED:", req.query.state);
-        console.log("PROFILE:", profile.id);
-
         if (state === "login") {
           action = "login";
         } else if (state && state.startsWith("signup")) {
@@ -43,7 +40,7 @@ passport.use(
         if (action === "signup") {
           if (existingUser) {
             return done(null, false, {
-              message: "Account already exists please sign in",
+              message: "Account already exists please Login",
             });
           }
           if (!role) {

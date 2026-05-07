@@ -1,0 +1,10 @@
+{
+     "welcome": "Bon retour",
+  "login_text": "Connectez-vous à votre compte Servily",
+  "email": "EMAIL",
+  "password": "MOT DE PASSE",
+  "forgot": "Mot de passe oublié ?",
+  "login_btn": "Se connecter",
+  "no_account": "Vous n'avez pas de compte ? S'inscrire",
+  "google_signin": "Se connecter avec Google"
+}
