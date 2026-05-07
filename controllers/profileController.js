@@ -22,7 +22,6 @@ exports.updateUser = async (req, res) => {
     if (req.file) {
       profilePicPath = `/uploads/profile/${req.file.filename}`;
     }
-    console.log("FILE:", req.file);
     if (user.role === "client") {
       const updateClient = await Client.findByIdAndUpdate(
         userId,

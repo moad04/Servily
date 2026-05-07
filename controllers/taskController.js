@@ -74,7 +74,16 @@ exports.editTask = async (req, res) => {
   try {
     const taskId = req.params.id;
     const { name, description, category, wilaya, baladiya } = req.body || {};
-
+    const existingTask = await Task.findById(taskId);
+    let taskPics = existingTask.picture;
+    if (req.file) {
+      taskPics = `/uploads/tasks/${req.file.filename}`;
+    }
+    console.log("Existing picture:", existingTask.picture);
+    console.log("New file:", req.file);
+    if (req.file)
+      console.log("New picture path:", `/uploads/tasks/${req.file.filename}`);
+    console.log("Final taskPics:", taskPics);
     const task = await Task.findByIdAndUpdate(
       taskId,
       {
@@ -83,6 +92,7 @@ exports.editTask = async (req, res) => {
         category,
         wilaya,
         baladiya,
+        picture: taskPics,
       },
       { new: true },
     );
