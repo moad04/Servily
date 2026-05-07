@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Servily – Sign Up</title>
+    <link rel="stylesheet" href="signup.css" />
+  </head>
+  <body>
+    <div class="left">
+      <div class="topbar">
+        <a href="/" style="text-decoration: none; color: inherit">
+          <div class="logo">Servily<span>.</span></div>
+        </a>
+        
+      </div>
+
+      <div class="heading">
+        <h1>Sign Up</h1>
+        <p>Let's start with some facts about you</p>
+      </div>
+<% if (messages && messages.error) { %>
+  <div class="flash-message error">
+    <%= messages.error %>
+  </div>
+<% } %> 
+
+
+      <form class="form" action="/signup" method="POST">
+        <div class="row">
+          <div class="field">
+            <label>First Name</label>
+            <input type="text" name="firstName" placeholder="Mouad" pattern="[A-Za-z]+" minlength="2" maxlength="50" required  />
+          </div>
+          <div class="field">
+            <label>Last Name</label>
+            <input type="text" name="lastName" placeholder="Brik" pattern="[A-Za-z]+" required />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Email</label>
+          <input
+            type="email"
+            name="email"
+            placeholder="you@example.com"
+            required
+          />
+        </div>
+
+        <div class="field">
+          <label>Password</label>
+          <input
+            type="password"
+            name="password"
+            placeholder="••••••••"
+            required
+          />
+        </div>
+
+        <div class="field">
+          <label>I am a</label>
+          <div class="select-wrap">
+            <select name="role" required>
+              <option value="" disabled selected>Select your role</option>
+              <option value="client">Client — I need tasks done</option>
+              <option value="worker">Worker — I offer services</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit">Sign Up</button>
+
+        <p class="login-link">
+          Already have an account? <a href="/login">Login</a>
+        </p>
+      </form>
+      <form method="get" id="googleForm">
+        <input type="hidden" name="role" id="hiddenRole" />
+        <button type="button" onclick="googleSubmit()" class="btn-google">
+          Sign up with google
+          <img
+            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+            alt="Google"
+          />
+        </button>
+      </form>
+    </div>
+
+    <div class="right">
+      <div class="right-fallback">
+        <p class="right-tagline">
+          Connect with trusted professionals across Algeria.
+        </p>
+      </div>
+    </div>
+  </body>
+  <script>
+    function googleSubmit() {
+      const role = document.querySelector('select[name="role"]').value;
+      if (!role) {
+        alert("Please select a role first!");
+        return;
+      }
+      window.location.href = `/auth/google/signup/${role}`;
+    }  
+    document.addEventListener("DOMContentLoaded", () => {
+  const msg = document.querySelector(".flash-message");
+
+  if (msg) {
+    setTimeout(() => {
+      msg.style.display = "none";
+    }, 5000);
+  }
+});
+    </script>
+</html>

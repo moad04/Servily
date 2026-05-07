@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= task.name %> - Servily</title>
+  <link rel="stylesheet" href="/index.css" />
+
+  <style>
+    .task-wrapper {
+      max-width: 700px;
+      margin: 60px auto;
+      padding: 0 20px;
+    }
+
+    /* TICKET STYLING */
+    .task-ticket {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      position: relative;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+      margin-bottom: 50px; /* Space between ticket and photos */
+    }
+
+    .ticket-header {
+      padding: 30px;
+      border-bottom: 2px dashed var(--border);
+      position: relative;
+    }
+
+    /* THE TICKET NOTCHES */
+    .ticket-header::before,
+    .ticket-header::after {
+      content: '';
+      position: absolute;
+      bottom: -11px;
+      width: 22px;
+      height: 22px;
+      background: #f4f4f4; 
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      z-index: 5;
+    }
+    .ticket-header::before { left: -12px; }
+    .ticket-header::after { right: -12px; }
+
+    .task-header h1 {
+      font-size: 1.8rem;
+      margin: 0 0 8px 0;
+    }
+
+    .task-meta {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .task-status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: #e7f7ea;
+      color: #1f7a3a;
+      margin-bottom: 10px;
+    }
+
+    .ticket-body {
+      padding: 30px;
+    }
+
+    .task-description {
+      line-height: 1.6;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    /* COMPLETELY SEPARATE PHOTO AREA */
+    .photo-attachments {
+      margin-top: 40px;
+    }
+
+    .photo-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .photo-stack {
+      display: flex;
+      flex-direction: column; /* Stacked vertically for separation */
+      gap: 20px;
+    }
+
+    .photo-stack img {
+      width: 100%;
+      max-height: 500px;
+      object-fit: cover;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .task-actions {
+      margin-top: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn-primary {
+      background: var(--text);
+      color: white;
+      border: none;
+      padding: 12px 26px;
+      border-radius: 50px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .client-link {
+      color: var(--text);
+      font-weight: 600;
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body> 
+
+  <% if (messages && messages.error) { %>
+  <div style="position: fixed; top: 80px; left: 50%; transform: translateX(-50%); z-index: 10000; background: #ef4444; color: white; padding: 12px 24px; border-radius: 8px; text-align: center;">
+    <%= messages.error %>
+    <button onclick="this.parentElement.remove()" style="background: none; border: none; color: white; margin-left: 15px; cursor: pointer;">×</button>
+  </div>
+<% } %>
+
+<% if (messages && messages.success) { %>
+  <div style="position: fixed; top: 80px; left: 50%; transform: translateX(-50%); z-index: 10000; background: #22c55e; color: white; padding: 12px 24px; border-radius: 8px; text-align: center;">
+    <%= messages.success %>
+    <button onclick="this.parentElement.remove()" style="background: none; border: none; color: white; margin-left: 15px; cursor: pointer;">×</button>
+  </div>
+<% } %>
+
+<% 
+  /* DATE LOGIC */
+  const datePosted = new Date(task.createdAt);
+  const now = new Date();
+  const diffTime = Math.abs(now - datePosted);
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  const timeLabel = diffDays === 0 ? "Today" : diffDays === 1 ? "1 day ago" : `${diffDays} days ago`;
+%>
+
+<nav>
+  <a href="/" class="logo">
+    Servily<span>.</span><small><%= user.role %></small>
+  </a>
+</nav>
+
+<div class="task-wrapper">
+
+  <div class="task-ticket">
+    <div class="ticket-header">
+      <span class="task-status"><%= task.status %></span>
+      <div class="task-header">
+        <h1><%= task.name %></h1>
+        <div class="task-meta">
+          <span><strong>Category:</strong> <%= task.category %></span>
+          <span>
+            <strong>Posted:</strong> 
+            <%= datePosted.toLocaleDateString() %> at <%= datePosted.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) %> 
+            (<%= timeLabel %>)
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ticket-body">
+      <div class="task-description">
+        <strong style="display:block; margin-bottom: 8px; font-size: 0.75rem; text-transform: uppercase; color: var(--muted);">About the job</strong>
+        <%= task.description %>
+      </div>
+
+      <div class="task-meta" style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #f0f0f0;">
+        <span><strong>Location:</strong> <%= task.baladiya %>, <%= task.wilaya %></span>
+        <span>
+          <strong>Posted by:</strong> 
+          <a href="/profile/<%= task.client._id %>" class="client-link">
+            <%= task.client.firstName %> <%= task.client.lastName %>
+          </a>
+        </span>
+      </div>
+
+      <div class="task-actions">
+        <% if (user && user.role === "worker") { %>
+          <button class="btn-primary" onclick="openModal()">Apply for this job</button>
+        <% } %>
+
+        <% if (user && user._id.toString() === task.client._id.toString()) { %>
+          <a href="/tasks/my" style="color: var(--muted); text-decoration: none; font-size: 0.85rem;">Back to my tasks</a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+<div class="photo-attachments">
+  <span class="photo-label">Photos Attached</span>
+
+  <div class="photo-stack">
+    <% 
+      // Check all possible image sources
+      const hasPicture = task.picture;
+      const hasImages = task.images && task.images.length > 0;
+      const hasImage = task.image;
+      
+      if (hasPicture || hasImages || hasImage) {
+    %>
+      
+      <% if (hasPicture) { %>
+        <img src="<%= task.picture %>" alt="Task photo">
+      <% } %>
+      
+      <% if (hasImages) { %>
+        <% task.images.forEach(img => { %>
+          <img src="<%= img %>" alt="Task photo">
+        <% }) %>
+      <% } %>
+      
+      <% if (hasImage && !hasPicture) { %>
+        <img src="<%= task.image %>" alt="Task photo">
+      <% } %>
+      
+    <% } else { %>
+      
+      <div style="
+        padding: 40px;
+        text-align: center;
+        border: 1px dashed var(--border);
+        border-radius: 20px;
+        color: var(--muted);
+        font-size: 0.85rem;
+      ">
+        No photos attached to this job
+      </div>
+      
+    <% } %>
+  </div>
+</div>
+</div> 
+
+<div id="applyModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+  <div style="background: var(--card-bg); border-radius: 24px; padding: 30px; max-width: 500px; width: 90%;">
+    <h2 style="margin-bottom: 20px;">Apply for: <%= task.name %></h2>
+    
+    <form action="/application/send-application" method="POST">
+      <input type="hidden" name="taskId" value="<%= task._id %>">
+      <div style="margin-bottom: 20px;">
+        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Your Message to Client</label>
+        <textarea name="message" rows="4" required style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg); color: var(--text); font-family: inherit;"></textarea>
+        <small style="color: var(--muted);">Tell the client why you're the right person for this job</small>
+      </div>
+      
+      <div style="margin-bottom: 20px;">
+        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Proposed Price (DZD)</label>
+        <input type="number" name="proposedPrice" required style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg); color: var(--text);">
+      </div>
+      
+      <div style="display: flex; gap: 12px;">
+        <button type="submit" style="background: var(--text); color: white; padding: 12px 24px; border: none; border-radius: 50px; cursor: pointer; font-weight: 600;">Submit Application</button>
+        <button type="button" onclick="closeModal()" style="background: transparent; border: 1px solid var(--border); padding: 12px 24px; border-radius: 50px; cursor: pointer;">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+</body>
+</html> 
+
+
+
+<script>
+  function openModal() {
+    document.getElementById('applyModal').style.display = 'flex';
+  }
+  
+  function closeModal() {
+    document.getElementById('applyModal').style.display = 'none';
+  }
+  
+  // Close modal when clicking outside
+  window.onclick = function(event) {
+    const modal = document.getElementById('applyModal');
+    if (event.target === modal) {
+      modal.style.display = 'none';
+    }
+  } 
+
+
+  setTimeout(() => {
+    const flashDiv = document.querySelector('[style*="position: fixed; top: 80px"]');
+    if (flashDiv) {
+      flashDiv.remove();
+    }
+  }, 5000);
+</script>

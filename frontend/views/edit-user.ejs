@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Servily – Edit Profile</title>
+  <link rel="stylesheet" href="/index.css"/>
+  <style>
+.edit-wrapper { max-width: 760px; margin: 60px auto; padding: 0 24px; } 
+.edit-heading { margin-bottom: 32px; animation: fadeUp 0.6s ease both; } 
+.edit-heading h1 { font-family: 'DM Serif Display', serif; font-size: 2rem; margin-bottom: 6px; } 
+.edit-heading p { font-size: 0.88rem; color: var(--muted); } 
+.edit-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 18px; padding: 32px; margin-bottom: 20px; animation: fadeUp 0.6s 0.1s ease both; } 
+.edit-card h2 { font-family: 'DM Serif Display', serif; font-size: 1.1rem; margin-bottom: 24px; padding-bottom: 14px; border-bottom: 1px solid var(--border); } 
+.edit-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; } 
+.edit-field { display: flex; flex-direction: column; gap: 6px; } 
+.edit-field.full { grid-column: span 2; } 
+.edit-field label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); } 
+.edit-field input, 
+.edit-field textarea, 
+.edit-field select { background: #f0f0ee; border: 1.5px solid transparent; border-radius: 10px; padding: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: 0.92rem; color: var(--text); outline: none; transition: border-color 0.2s; width: 100%; } 
+.edit-field input:focus, 
+.edit-field textarea:focus, 
+.edit-field select:focus { border-color: var(--text); } 
+.edit-field textarea { resize: vertical; min-height: 100px; } 
+.select-wrap { position: relative; } 
+.select-wrap::after { content: "∨"; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; font-size: 0.85rem; color: var(--muted); } 
+.select-wrap select { appearance: none; -webkit-appearance: none; } 
+.skills-input-wrap { display: flex; flex-wrap: wrap; gap: 8px; background: #f0f0ee; border: 1.5px solid transparent; border-radius: 10px; padding: 10px 14px; cursor: text; min-height: 48px; align-items: center; transition: border-color 0.2s; } 
+.skills-input-wrap:focus-within { border-color: var(--text); } 
+.skill-tag { background: var(--text); color: #fff; border-radius: 50px; padding: 4px 12px; font-size: 0.78rem; font-weight: 500; display: flex; align-items: center; gap: 6px; } 
+.skill-tag button { background: none; border: none; color: #fff; cursor: pointer; font-size: 0.8rem; padding: 0; line-height: 1; opacity: 0.7; } 
+.skill-tag button:hover { opacity: 1; } 
+.skills-input { border: none !important; background: transparent !important; padding: 0 !important; outline: none; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; flex: 1; min-width: 100px; } 
+.skills-hint { font-size: 0.75rem; color: var(--muted); margin-top: 4px; } 
+.toggle-wrap { display: flex; align-items: center; gap: 12px; } 
+.toggle { position: relative; width: 44px; height: 24px; } 
+.toggle input { opacity: 0; width: 0; height: 0; } 
+.toggle-slider { position: absolute; inset: 0; background: var(--border); border-radius: 50px; cursor: pointer; transition: background 0.2s; } 
+.toggle-slider::before { content: ""; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: transform 0.2s; } 
+.toggle input:checked + .toggle-slider { background: var(--accent); } 
+.toggle input:checked + .toggle-slider::before { transform: translateX(20px); } 
+.toggle-label { font-size: 0.9rem; font-weight: 500; } 
+.edit-actions { display: flex; gap: 12px; margin-top: 8px; animation: fadeUp 0.6s 0.2s ease both; } 
+.btn-save { background: var(--text); color: #fff; border: none; padding: 12px 32px; border-radius: 50px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s; } 
+.btn-save:hover { opacity: 0.8; } 
+.btn-cancel { background: transparent; color: var(--muted); border: 1.5px solid var(--border); padding: 12px 32px; border-radius: 50px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 500; cursor: pointer; text-decoration: none; transition: border-color 0.2s, color 0.2s; } 
+.btn-cancel:hover { border-color: var(--text); color: var(--text); } 
+.avatar-edit { display: flex; justify-content: center; margin-bottom: 32px; } 
+.avatar-circle { position: relative; width: 120px; height: 120px; border-radius: 50%; background: var(--text); display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', serif; font-size: 2.8rem; color: #fff; overflow: visible; } 
+.avatar-circle img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; } 
+.avatar-btn { position: absolute; bottom: 4px; right: 4px; background: var(--accent); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.8rem; border: 2px solid var(--bg); } 
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="/" class="logo">Servily<span>.</span></a>
+    <div class="nav-links">
+      <a href="/tasks">Browse tasks</a>
+      <a href="/profile">Profile</a>
+    </div>
+    <div class="nav-cta">
+      <form action="/logout" method="POST">
+        <button type="submit" class="btn-ghost">Log out</button>
+      </form>
+    </div>
+  </nav>
+
+  <div class="edit-wrapper">
+
+    <div class="edit-heading">
+      <h1>Edit Profile</h1>
+      <p>Update your personal information</p>
+    </div>
+
+    <!-- CHANGED: Added enctype and id to form -->
+    <form action="/profile/edit" method="post" enctype="multipart/form-data" id="profileForm">
+
+      <div class="avatar-edit">
+        <div class="avatar-circle">
+
+          <% if (user.profilePic) { %>
+            <img src="<%= user.profilePic %>" alt="Profile"/>
+          <% } else { %>
+            <%= user.firstName.charAt(0) %>
+          <% } %>
+
+          <label class="avatar-btn" for="profilePicInput">📷</label>
+          <input type="file" id="profilePicInput" name="profilePic" accept="image/*" hidden/>
+        </div>
+      </div>
+
+      <div class="edit-card">
+        <h2>Personal Information</h2>
+
+        <div class="edit-fields">
+          <div class="edit-field">
+            <label>First Name</label>
+            <input type="text" name="firstName" value="<%= user.firstName %>" required/>
+          </div>
+
+          <div class="edit-field">
+            <label>Last Name</label>
+            <input type="text" name="lastName" value="<%= user.lastName %>" required/>
+          </div>
+
+          <div class="edit-field">
+            <label>Phone</label>
+            <input type="text" name="phone" value="<%= user.phone || '' %>"/>
+          </div>
+
+          <div class="edit-field">
+            <label>Location</label>
+            <input type="text" name="location" value="<%= user.location || '' %>"/>
+          </div>
+        </div>
+      </div>
+
+      <% if (user.role === 'worker') { %>
+
+      <div class="edit-card">
+        <h2>Worker Profile</h2>
+
+        <div class="edit-fields">
+
+          <div class="edit-field full">
+            <label>Worker Type</label>
+            <select name="workerType">
+              <option value="individual" <%= user.workerType === 'individual' ? 'selected' : '' %>>Individual</option>
+              <option value="company" <%= user.workerType === 'company' ? 'selected' : '' %>>Company</option>
+            </select>
+          </div>
+
+          <div class="edit-field full">
+            <label>Bio</label>
+            <textarea name="bio"><%= user.bio || '' %></textarea>
+          </div>
+
+          <div class="edit-field full">
+            <label>Skills</label>
+
+            <select id="skillsSelect">
+              <option value="" disabled selected>Select a skill</option>
+              <% if (skills && skills.length > 0) { %>
+                <% skills.forEach(skill => { %>
+                  <option value="<%= skill %>"><%= skill %></option>
+                <% }) %>
+              <% } %>
+            </select>
+
+            <div id="skillsWrap" class="skills-input-wrap">
+              <% if (user.skills && user.skills.length > 0) { %>
+                <% user.skills.forEach(skill => { %>
+                  <span class="skill-tag">
+                    <%= skill %>
+                    <button type="button" onclick="removeSkill(this)">✕</button>
+                    <input type="hidden" name="skills" value="<%= skill %>"/>
+                  </span>
+                <% }) %>
+              <% } %>
+            </div>
+            <span class="skills-hint">Choose skills from the list</span>
+          </div>
+
+        </div>
+      </div>
+
+      <% } %>
+
+      <div class="edit-actions">
+        <button type="submit" class="btn-save">Save Changes</button>
+        <a href="/profile" class="btn-cancel">Cancel</a>
+      </div>
+
+    </form>
+  </div>
+
+  <footer>
+    <a href="/" class="footer-logo">Servily<span>.</span></a>
+    <span>© 2025 Servily</span>
+    <span>Made for Algeria 🇩🇿</span>
+  </footer>
+
+  <script>
+    // CHANGED: Auto-submit form when profile picture is selected
+    document.getElementById('profilePicInput').addEventListener('change', function(e) {
+      if (e.target.files.length > 0) {
+        document.getElementById('profileForm').submit();
+      }
+    });
+
+    function addSkillFromSelect(select) {
+      const value = select.value;
+      if (!value) return;
+
+      const wrap = document.getElementById('skillsWrap');
+
+      const exists = [...wrap.querySelectorAll('input[name="skills"]')]
+        .some(input => input.value === value);
+
+      if (exists) return;
+
+      const tag = document.createElement('span');
+      tag.className = 'skill-tag';
+
+      tag.innerHTML = `
+        ${value}
+        <button type="button" onclick="removeSkill(this)">✕</button>
+        <input type="hidden" name="skills" value="${value}">
+      `;
+
+      wrap.appendChild(tag);
+      select.value = "";
+    }
+
+    function removeSkill(btn) {
+      btn.parentElement.remove();
+    }
+  </script>
+
+</body>
+</html>

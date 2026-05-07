@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Applications for My Tasks - Servily</title>
+  <link rel="stylesheet" href="/index.css" />
+  <style>
+    .applications-container {
+      max-width: 900px;
+      margin: 60px auto;
+      padding: 0 24px;
+    }
+    
+    .applications-header {
+      margin-bottom: 30px;
+    }
+    
+    .applications-header h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.8rem;
+    }
+    
+    .application-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      transition: transform 0.2s ease;
+    }
+    
+    .application-card:hover {
+      transform: translateY(-2px);
+    }
+    
+    /* INFO AREA */
+    .application-info {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .application-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .worker-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 0;
+    }
+    
+    .worker-name a {
+      text-decoration: none;
+      color: inherit;
+    }
+    
+    .status-badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 50px;
+      width: fit-content;
+      display: inline-block;
+    }
+    
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffd89a;
+    }
+    
+    .status-accepted {
+      background: #e7f7ea;
+      color: #1f7a3a;
+      border: 1px solid #bde5c6;
+    }
+    
+    .status-rejected {
+      background: #fde8e8;
+      color: #b42318;
+      border: 1px solid #f5b5b5;
+    }
+    
+    .task-name {
+      font-size: 0.9rem;
+      color: var(--text);
+      font-weight: 500;
+    }
+    
+    .proposed-price {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    
+    .message-box {
+      background: var(--bg);
+      padding: 12px;
+      border-radius: 12px;
+      margin-top: 8px;
+      border-left: 3px solid var(--text);
+      font-style: italic;
+      font-size: 0.85rem;
+    }
+    
+    .application-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+    
+    .btn-accept {
+      background: var(--text);
+      color: #fff;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    
+    .btn-accept:hover {
+      opacity: 0.85;
+      transform: translateY(-1px);
+    }
+    
+    .btn-reject {
+      background: transparent;
+      color: #e00;
+      border: 1.5px solid #e00;
+      padding: 8px 20px;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    
+    .btn-reject:hover {
+      background: #e00;
+      color: white;
+      transform: translateY(-1px);
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 60px;
+      background: var(--card-bg);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+    }
+    
+    .empty-state h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+    }
+    
+    .empty-state p {
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    
+    .empty-state a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    
+    .empty-state a:hover {
+      text-decoration: underline;
+    }
+    
+    /* Flash message styles */
+    .flash {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 16px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 500;
+      z-index: 9999;
+      animation: fadeInOut 4s ease forwards;
+      white-space: nowrap;
+    }
+
+    @keyframes fadeInOut {
+      0% {
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      80% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+
+    .flash.success {
+      background: #22c55e;
+      color: white;
+    }
+
+    .flash.error {
+      background: #ef4444;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Flash Messages -->
+  <% if (messages && messages.success) { %>
+    <div class="flash success"><%= messages.success %></div>
+  <% } %>
+
+  <% if (messages && messages.error) { %>
+    <div class="flash error"><%= messages.error %></div>
+  <% } %>
+
+  <nav>
+    <a href="/" class="logo">
+      Servily<span>.</span> <small>Client</small>
+    </a>
+    <div class="nav-links">
+      <a href="/tasks/my">My Tasks</a>
+      <a href="/profile">My Profile</a> 
+      <a href="/application/client-applications">My Applications</a>
+    </div> 
+    <div class="nav-cta">
+      <form action="/logout" method="POST">
+        <button class="btn-ghost">Logout</button>
+      </form>
+    </div>
+  </nav>
+
+  <div class="applications-container">
+    <div class="applications-header">
+      <h1>Applications for My Tasks</h1>
+    </div>
+    
+    <% if (applications && applications.length > 0) { %>
+      <% applications.forEach(app => { %>
+        <div class="application-card">
+          <div class="application-info">
+            <div class="application-header">
+              <div class="worker-name">
+                <a href="/profile/<%= app.worker?._id %>">
+                  <%= app.worker?.firstName %> <%= app.worker?.lastName %>
+                </a>
+              </div>
+              <span class="status-badge status-<%= app.status %>">
+                <%= app.status.toUpperCase() %>
+              </span>
+            </div>
+            
+            <div class="task-name">
+              Task: <%= app.task?.name %>
+            </div>
+            
+            <div class="proposed-price">
+              Proposed Price: <%= app.proposedPrice %> DZD
+            </div>
+            
+            <div class="message-box">
+              "<%= app.message %>"
+            </div>
+            
+            <% if (app.status === 'pending') { %>
+              <div class="application-actions">
+                <form action="/applications/accept/<%= app._id %>" method="POST">
+                  <button type="submit" class="btn-accept">Accept</button>
+                </form>
+                <form action="/application/reject-application/<%= app._id %>" method="POST">
+                  <button type="submit" class="btn-reject">Reject</button>
+                </form>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      <% }) %>
+    <% } else { %>
+      <div class="empty-state">
+        <h3>No applications yet</h3>
+        <p>When workers apply to your tasks, they will appear here.</p>
+        <a href="/tasks/my">View My Tasks →</a>
+      </div>
+    <% } %>
+  </div>
+
+  <script>
+    // Auto hide flash message after 4 seconds
+    setTimeout(() => {
+      const flashDiv = document.querySelector('.flash');
+      if (flashDiv) {
+        flashDiv.style.display = 'none';
+      }
+    }, 4000);
+  </script>
+</body>
+</html>

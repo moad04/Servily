@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Servily – My Profile</title>
+  <link rel="stylesheet" href="index.css"/>
+  <style>
+    .profile-wrapper {
+      max-width: 760px;
+      margin: 60px auto;
+      padding: 0 24px;
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      margin-bottom: 40px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .profile-avatar {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'DM Serif Display', serif;
+      font-size: 2rem;
+      color: #fff;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-header-info h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.8rem;
+      margin-bottom: 4px;
+    }
+
+    .profile-header-info p {
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .profile-badge {
+      display: inline-block;
+      background: var(--text);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 50px;
+      margin-top: 8px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .availability-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 50px;
+      margin-top: 8px;
+      margin-left: 6px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .available { background: var(--accent); color: var(--text); }
+    .unavailable { background: var(--border); color: var(--muted); }
+
+    .profile-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 32px;
+      margin-bottom: 20px;
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+
+    .profile-card h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.1rem;
+      margin-bottom: 24px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .profile-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .profile-field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .profile-field.full {
+      grid-column: span 2;
+    }
+
+    .profile-field label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .profile-field span {
+      font-size: 0.95rem;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .profile-field span.empty {
+      color: var(--muted);
+      font-style: italic;
+      font-weight: 400;
+    }
+
+    .skills-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .skill-tag {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 5px 14px;
+      font-size: 0.82rem;
+      font-weight: 500;
+    }
+
+    .rating-display {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stars { color: #f4b400; font-size: 1rem; }
+
+    .profile-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 28px;
+      animation: fadeUp 0.6s 0.2s ease both;
+    }
+
+    .btn-edit {
+      background: var(--text);
+      color: #fff;
+      border: none;
+      padding: 11px 28px;
+      border-radius: 50px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .btn-edit:hover { opacity: 0.8; }
+
+    .btn-delete {
+      background: transparent;
+        color: #e00;
+      border: 1.5px solid #e00;
+      padding: 11px 28px;
+      border-radius: 50px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .btn-delete:hover { color: #e00; border-color: #e00; }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+     <a href="/" class="logo">
+        Servily<span>.</span> <small><%= user.role %></small>
+      </a>
+    <div class="nav-links">
+      <a href="/tasks">Browse tasks</a>
+      <a href="/profile">Profile</a>
+    </div>
+    <div class="nav-cta">
+      <form action="/logout" method="POST">
+        <button type="submit" class="btn-ghost">Log out</button>
+      </form>
+    </div>
+  </nav>
+
+  <div class="profile-wrapper">
+
+    <!-- HEADER -->
+    <div class="profile-header">
+      <div class="profile-avatar">
+        <% if (user.profilePic) { %>
+          <img src="<%= user.profilePic %>" alt="Profile picture"/>
+        <% } else { %>
+          <%= user.firstName.charAt(0) %>
+        <% } %>
+      </div>
+      <div class="profile-header-info">
+        <h1><%= user.firstName %> <%= user.lastName %></h1>
+        <p><%= user.email %></p>
+        <span class="profile-badge">Worker</span>
+        <span class="availability-badge <%= user.isAvailable ? 'available' : 'unavailable' %>">
+          <%= user.isAvailable ? 'Available' : 'Unavailable' %>
+        </span>
+      </div>
+    </div>
+
+    <!-- PERSONAL INFO -->
+    <div class="profile-card">
+      <h2>Personal Information</h2>
+      <div class="profile-fields">
+
+        <div class="profile-field">
+          <label>First Name</label>
+          <span><%= user.firstName %></span>
+        </div>
+
+        <div class="profile-field">
+          <label>Last Name</label>
+          <span><%= user.lastName %></span>
+        </div>
+
+        <div class="profile-field">
+          <label>Email</label>
+          <span><%= user.email %></span>
+        </div>
+
+        <div class="profile-field">
+          <label>Phone</label>
+          <span class="<%= user.phone ? '' : 'empty' %>">
+            <%= user.phone || 'Not provided yet' %>
+          </span>
+        </div>
+
+        <div class="profile-field full">
+          <label>Location</label>
+          <span class="<%= user.location ? '' : 'empty' %>">
+            <%= user.location || 'Not provided yet' %>
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- WORKER INFO -->
+    <div class="profile-card">
+      <h2>Worker Profile</h2>
+      <div class="profile-fields">
+
+        <div class="profile-field">
+          <label>Worker Type</label>
+          <span><%= user.workerType ? user.workerType.charAt(0).toUpperCase() + user.workerType.slice(1) : 'Not set' %></span>
+        </div>
+
+        <div class="profile-field">
+          <label>Rating</label>
+          <div class="rating-display">
+            <span class="stars">★</span>
+            <span><%= user.rating || '0' %> / 5</span>
+          </div>
+        </div>
+
+        <div class="profile-field full">
+          <label>Bio</label>
+          <span class="<%= user.bio ? '' : 'empty' %>">
+            <%= user.bio || 'No bio yet — tell clients about yourself!' %>
+          </span>
+        </div>
+
+        <div class="profile-field full">
+          <label>Skills</label>
+          <% if (user.skills && user.skills.length > 0) { %>
+            <div class="skills-list">
+              <% user.skills.forEach(skill => { %>
+                <span class="skill-tag"><%= skill %></span>
+              <% }) %>
+            </div>
+          <% } else { %>
+            <span class="empty">No skills added yet</span>
+          <% } %>
+        </div> 
+        
+        
+      </div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="profile-actions">
+      <a href="/profile/edit" class="btn-edit">Edit Profile</a>
+      <form action="/profile/deleteProfile" method="post">
+        <button type="submit" class="btn-delete">Delete profile</button>
+      </form>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <a href="/" class="footer-logo">Servily<span>.</span></a>
+    <span>© 2025 Servily. All rights reserved.</span>
+    
+  </footer>
+
+</body>
+</html>

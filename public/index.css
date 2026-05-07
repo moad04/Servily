@@ -1,0 +1,425 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Serif+Display:ital@0;1&display=swap");
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --bg: #f7f7f5;
+        --text: #111;
+        --muted: #888;
+        --accent: #c8f04a;
+        --accent-dark: #a8d030;
+        --card-bg: #fff;
+        --border: #e5e5e3;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        overflow-x: hidden;
+      }
+
+      /* ── NAVBAR ── */
+      nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 60px;
+        position: sticky;
+        top: 0;
+        background: rgba(247, 247, 245, 0.92);
+        backdrop-filter: blur(12px);
+        z-index: 100;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .logo {
+        font-family: "DM Serif Display", serif;
+        font-size: 1.5rem;
+        color: var(--text);
+        text-decoration: none;
+      }
+      .logo span {
+        color: var(--accent-dark);
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+      }
+
+      .nav-links a {
+        text-decoration: none;
+        color: var(--muted);
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: color 0.2s;
+      }
+      .nav-links a:hover {
+        color: var(--text);
+      }
+
+      .nav-cta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .btn-ghost {
+        background: transparent;
+        border: 1.5px solid var(--border);
+        padding: 9px 22px;
+        border-radius: 50px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        color: var(--text);
+        transition:
+          border-color 0.2s,
+          background 0.2s;
+      }
+      .btn-ghost:hover {
+        border-color: var(--text);
+        background: var(--text);
+        color: #fff;
+      }
+
+      .btn-solid {
+        background: var(--text);
+        color: #fff;
+        border: 1.5px solid var(--text);
+        padding: 9px 22px;
+        border-radius: 50px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: opacity 0.2s;
+      }
+      .btn-solid:hover {
+        opacity: 0.8;
+      }
+
+      /* ── HERO ── */
+      .hero {
+        padding: 100px 60px 80px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+        min-height: 88vh;
+      }
+
+      .hero-left {
+        animation: fadeUp 0.7s ease both;
+      }
+
+      .hero-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--accent);
+        color: var(--text);
+        padding: 6px 14px;
+        border-radius: 50px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        margin-bottom: 28px;
+      }
+      .hero-tag::before {
+        content: "✦";
+        font-size: 0.7rem;
+      }
+
+      .hero h1 {
+        font-family: "DM Serif Display", serif;
+        font-size: clamp(2.8rem, 5vw, 4.2rem);
+        line-height: 1.1;
+        margin-bottom: 24px;
+        letter-spacing: -0.5px;
+      }
+
+      .hero h1 em {
+        font-style: italic;
+        color: var(--muted);
+      }
+
+      .hero p {
+        font-size: 1.05rem;
+        color: var(--muted);
+        line-height: 1.7;
+        max-width: 440px;
+        margin-bottom: 40px;
+      }
+
+      .hero-actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      .btn-hero {
+        background: var(--accent);
+        color: var(--text);
+        border: none;
+        padding: 14px 32px;
+        border-radius: 50px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition:
+          background 0.2s,
+          transform 0.15s;
+      }
+      .btn-hero:hover {
+        background: var(--accent-dark);
+        transform: translateY(-2px);
+      }
+
+      .hero-note {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+
+      /* hero right — abstract grid */
+      .hero-right {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        animation: fadeUp 0.7s 0.15s ease both;
+      }
+
+      .hero-card {
+        background: var(--card-bg);
+        border-radius: 18px;
+        padding: 24px;
+        border: 1px solid var(--border);
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+      .hero-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.07);
+      }
+
+      .hero-card.tall {
+        grid-row: span 2;
+      }
+      .hero-card.accent-card {
+        background: var(--accent);
+        border-color: var(--accent);
+      }
+
+      .card-icon {
+        font-size: 1.6rem;
+        margin-bottom: 12px;
+      }
+      .hero-card h3 {
+        font-family: "DM Serif Display", serif;
+        font-size: 1.1rem;
+        margin-bottom: 6px;
+      }
+      .hero-card p {
+        font-size: 0.82rem;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+      .accent-card p {
+        color: #555;
+      }
+
+      .stat {
+        font-family: "DM Serif Display", serif;
+        font-size: 2.2rem;
+        margin-bottom: 4px;
+      }
+      .stat-label {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      /* ── CATEGORIES ── */
+      .section {
+        padding: 80px 60px;
+      }
+
+      .section-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-bottom: 40px;
+      }
+
+      .section-header h2 {
+        font-family: "DM Serif Display", serif;
+        font-size: 2rem;
+        line-height: 1.2;
+      }
+
+      .section-header a {
+        font-size: 0.85rem;
+        color: var(--muted);
+        text-decoration: none;
+        font-weight: 500;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 2px;
+        transition: color 0.2s;
+      }
+      .section-header a:hover {
+        color: var(--text);
+      }
+
+      .categories {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 14px;
+      }
+
+      .cat-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 22px 18px;
+        text-decoration: none;
+        color: var(--text);
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s,
+          background 0.2s;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .cat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        background: var(--accent);
+        border-color: var(--accent);
+      }
+
+      .cat-icon {
+        font-size: 1.6rem;
+      }
+      .cat-name {
+        font-size: 0.88rem;
+        font-weight: 600;
+      }
+      .cat-count {
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+
+      /* ── HOW IT WORKS ── */
+      .how {
+        background: var(--text);
+        color: #fff;
+        padding: 80px 60px;
+      }
+
+      .how h2 {
+        font-family: "DM Serif Display", serif;
+        font-size: 2rem;
+        margin-bottom: 52px;
+        color: #fff;
+      }
+
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 40px;
+      }
+
+      .step-num {
+        font-family: "DM Serif Display", serif;
+        font-size: 3rem;
+        color: var(--accent);
+        line-height: 1;
+        margin-bottom: 16px;
+      }
+
+      .step h3 {
+        font-size: 1.05rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #fff;
+      }
+
+      .step p {
+        font-size: 0.88rem;
+        color: #aaa;
+        line-height: 1.6;
+      }
+
+      /* ── CTA ── */
+      .cta {
+        padding: 80px 60px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 40px;
+        border-top: 1px solid var(--border);
+      }
+
+      .cta h2 {
+        font-family: "DM Serif Display", serif;
+        font-size: 2.2rem;
+        max-width: 500px;
+        line-height: 1.2;
+      }
+
+      .cta-actions {
+        display: flex;
+        gap: 14px;
+        flex-shrink: 0;
+      }
+
+      /* ── FOOTER ── */
+      footer {
+        background: var(--text);
+        color: #aaa;
+        padding: 32px 60px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.82rem;
+      }
+
+      .footer-logo {
+        font-family: "DM Serif Display", serif;
+        color: #fff;
+        font-size: 1.2rem;
+        text-decoration: none;
+      }
+      .footer-logo span {
+        color: var(--accent);
+      }
+
+      /* ── ANIMATIONS ── */
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(24px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      } 

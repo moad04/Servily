@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Servily – <%= worker.firstName %> <%= worker.lastName %> Profile</title>
+  <link rel="stylesheet" href="/index.css"> 
+  <style>
+    .profile-wrapper {
+      max-width: 760px;
+      margin: 60px auto;
+      padding: 0 24px;
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      margin-bottom: 40px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .profile-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: #1a1a1a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.2rem;
+      color: white;
+      flex-shrink: 0;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-header-info h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2rem;
+      margin-bottom: 4px;
+    }
+
+    .profile-header-info p {
+      font-size: 0.95rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .profile-badge {
+      display: inline-block;
+      background: #1a1a1a;
+      color: white;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 4px 14px;
+      border-radius: 50px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .profile-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 32px;
+      margin-bottom: 20px;
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+
+    .profile-card h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.2rem;
+      margin-bottom: 24px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .profile-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+
+    .profile-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .profile-field.full {
+      grid-column: span 2;
+    }
+
+    .profile-field label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .profile-field span {
+      font-size: 1rem;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .profile-field span.empty {
+      color: var(--muted);
+      font-style: italic;
+      font-weight: 400;
+    }
+
+    .skills-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 5px;
+    }
+
+    .skill-tag {
+      background: #1a1a1a;
+      color: white !important;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .bio-text {
+      line-height: 1.6;
+      margin-top: 5px;
+    }
+
+    .back-nav {
+      margin-bottom: 20px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+
+    @media (max-width: 600px) {
+      .profile-fields { grid-template-columns: 1fr; }
+      .profile-field.full { grid-column: span 1; }
+    }
+
+    /* STAR RATING STYLES */
+    .rating-section {
+      grid-column: span 2;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .rating-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .minimal-stars {
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .minimal-stars input {
+      display: none;
+    }
+
+    .minimal-stars label {
+      cursor: pointer;
+      font-size: 32px;
+      line-height: 1;
+      color: #d1d5db;
+      transition: all 0.2s ease-in-out;
+      display: inline-block;
+    }
+
+    .minimal-stars label:hover,
+    .minimal-stars label:hover ~ label {
+      color: #f59e0b;
+      transform: scale(1.15);
+    }
+
+    .minimal-stars input:checked ~ label {
+      color: #f59e0b;
+    }
+
+    .minimal-stars label:active {
+      transform: scale(0.95);
+    }
+
+    .minimal-stars.loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .minimal-stars.loading label {
+      cursor: wait;
+    }
+
+    .display-stars {
+      color: #f59e0b;
+      font-size: 18px;
+      letter-spacing: 2px;
+    }
+
+    .rating-summary {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* Flash toast notification */
+    .flash-overlay {
+      position: fixed;
+      top: 80px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    .flash-toast {
+      pointer-events: auto;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .flash-toast.success {
+      background: #22c55e;
+      color: white;
+    }
+
+    .flash-toast.error {
+      background: #ef4444;
+      color: white;
+    }
+
+    .flash-close {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
+      line-height: 1;
+      opacity: 0.8;
+    }
+
+    .flash-close:hover {
+      opacity: 1;
+    }
+
+    .rating-message {
+      margin-top: 10px;
+      font-size: 0.8rem;
+      padding: 6px 12px;
+      border-radius: 6px;
+      display: inline-block;
+    }
+
+    .rating-message.submitting {
+      background: rgba(59, 130, 246, 0.1);
+      color: #3b82f6;
+    }
+
+    @media (max-width: 600px) {
+      .minimal-stars label {
+        font-size: 28px;
+      }
+      
+      .rating-section {
+        grid-column: span 1;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Flash messages -->
+<% if (messages && messages.error) { %>
+  <div class="flash-overlay">
+    <div class="flash-toast error">
+      <%= messages.error %>
+      <button class="flash-close" onclick="this.parentElement.parentElement.remove()">×</button>
+    </div>
+  </div>
+<% } %>
+
+<% if (messages && messages.success) { %>
+  <div class="flash-overlay">
+    <div class="flash-toast success">
+      <%= messages.success %>
+      <button class="flash-close" onclick="this.parentElement.parentElement.remove()">×</button>
+    </div>
+  </div>
+<% } %>
+
+<nav>
+  <a href="/" class="logo">
+    Servily<span>.</span> <small><%= user.role %></small>
+  </a>
+  <div class="nav-links">
+    <a href="/tasks">Browse tasks</a>
+    <a href="/profile">My Profile</a>
+  </div>
+</nav>
+
+<div class="profile-wrapper">
+  
+
+
+  <div class="profile-header">
+    <div class="profile-avatar">
+      <% if (worker.profilePic) { %>
+        <img src="<%= worker.profilePic %>" alt="Profile picture"/>
+      <% } else { %>
+        <%= worker.firstName.charAt(0) %>
+      <% } %>
+    </div>
+    <div class="profile-header-info">
+      <h1><%= worker.firstName %> <%= worker.lastName %></h1>
+      <p><%= worker.email %></p>
+      <span class="profile-badge">Worker</span>
+    </div>
+  </div>
+
+  <div class="profile-card">
+    <h2>About this Worker</h2>
+    <div class="profile-fields">
+
+      <div class="profile-field">
+        <label>Full Name</label>
+        <span><%= worker.firstName %> <%= worker.lastName %></span>
+      </div>
+
+      <div class="profile-field">
+        <label>Member Since</label>
+        <span><%= new Date(worker.createdAt).toLocaleDateString('en-GB', { 
+          day: 'numeric', 
+          month: 'long', 
+          year: 'numeric' 
+        }) %></span> 
+      </div>
+
+      <div class="profile-field">
+        <label>Contact Email</label>
+        <span><%= worker.email %></span>
+      </div>
+
+      <div class="profile-field">
+        <label>Phone Number</label>
+        <span class="<%= worker.phone ? '' : 'empty' %>">
+          <%= worker.phone || 'Private' %>
+        </span>
+      </div>
+
+      <div class="profile-field full">
+        <label>Location</label>
+        <span class="<%= worker.location ? '' : 'empty' %>">
+          <%= worker.location || 'Not specified' %>
+        </span>
+      </div>
+
+      <!-- Skills Section -->
+      <div class="profile-field full">
+        <label>Skills</label>
+        <div class="skills-container">
+          <% if (worker.skills && worker.skills.length > 0) { %>
+            <% worker.skills.forEach(skill => { %>
+              <span class="skill-tag"><%= skill %></span>
+            <% }); %>
+          <% } else { %>
+            <span class="empty">No skills listed</span>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Bio Section -->
+      <div class="profile-field full">
+        <label>Bio</label>
+        <div class="bio-text">
+          <% if (worker.bio) { %>
+            <%= worker.bio %>
+          <% } else { %>
+            <span class="empty">No bio provided</span>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- RATING SECTION - AUTO SUBMIT ON STAR CLICK -->
+      <div class="rating-section">
+        <span class="rating-label">Rate this worker</span>
+        
+        <form action="/rating/add-rating" method="POST" id="ratingForm">
+          <input type="hidden" name="targetId" value="<%= worker._id %>">
+          
+          <div class="minimal-stars" id="starRating">
+            <input type="radio" id="rs5" name="rating" value="5" required />
+            <label for="rs5" title="5 stars - Excellent">★</label>
+            
+            <input type="radio" id="rs4" name="rating" value="4" required />
+            <label for="rs4" title="4 stars - Very Good">★</label>
+            
+            <input type="radio" id="rs3" name="rating" value="3" required />
+            <label for="rs3" title="3 stars - Good">★</label>
+            
+            <input type="radio" id="rs2" name="rating" value="2" required />
+            <label for="rs2" title="2 stars - Fair">★</label>
+            
+            <input type="radio" id="rs1" name="rating" value="1" required />
+            <label for="rs1" title="1 star - Poor">★</label>
+          </div>
+          
+          <div id="ratingMessage"></div>
+        </form>
+      </div>
+
+      <!-- RATING DISPLAY SECTION -->
+      <div class="profile-field" style="grid-column: span 2;">
+        <label>Worker Rating</label>
+        <div class="rating-summary">
+          <span class="display-stars">
+            <% if (ratingCount > 0) { 
+              let roundedAvg = Math.round(averageRating);
+            %>
+              <% for(let i = 0; i < 5; i++) { %>
+                <%= i < roundedAvg ? '★' : '☆' %>
+              <% } %>
+            <% } else { %>
+              ☆☆☆☆☆
+            <% } %>
+          </span>
+          <% if (ratingCount > 0) { %>
+            <span style="color: var(--text); font-size: 0.95rem;">
+              <%= averageRating.toFixed(1) %> 
+              <span style="color: var(--muted);">(based on <%= ratingCount %> review<%= ratingCount !== 1 ? 's' : '' %>)</span>
+            </span>
+          <% } else { %>
+            <span class="empty">No ratings yet</span>
+          <% } %>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <a href="/" class="footer-logo">Servily<span>.</span></a>
+  <span>© 2025 Servily. All rights reserved.</span>
+</footer>
+
+<script>
+  // Auto-submit form when a star is clicked
+  const ratingForm = document.getElementById('ratingForm');
+  const starContainer = document.getElementById('starRating');
+  const ratingMessage = document.getElementById('ratingMessage');
+  const radioButtons = document.querySelectorAll('.minimal-stars input');
+  
+  radioButtons.forEach(radio => {
+    radio.addEventListener('change', function() {
+      if (this.checked) {
+        starContainer.classList.add('loading');
+        ratingMessage.innerHTML = '<div class="rating-message submitting">Submitting your rating...</div>';
+        ratingForm.submit();
+      }
+    });
+  });
+  
+  // Auto hide flash messages after 3 seconds
+  setTimeout(() => {
+    const flashOverlay = document.querySelector('.flash-overlay');
+    if (flashOverlay) {
+      flashOverlay.style.transition = 'opacity 0.3s';
+      flashOverlay.style.opacity = '0';
+      setTimeout(() => {
+        flashOverlay.remove();
+      }, 300);
+    }
+  }, 3000);
+</script>
+
+</body>
+</html>

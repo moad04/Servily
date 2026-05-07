@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Servily - Tasks</title>
+  <link rel="stylesheet" href="/index.css" /> 
+  <style>
+  
+/* =========================
+   TASK PAGE LAYOUT
+   ========================= */
+
+.task-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+/* =========================
+   TASK CARD
+   ========================= */
+
+.task-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease; 
+ 
+}
+
+.task-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+/* =========================
+   IMAGE AREA
+   ========================= */
+
+.task-img {
+  width: 100%;
+  height: 160px;
+  background: #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.task-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.task-placeholder {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* =========================
+   CONTENT
+   ========================= */
+
+.task-info {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.task-info h3 {
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+/* DESCRIPTION */
+.task-desc {
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* META */
+.task-location,
+.task-category {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+/* =========================
+   CLIENT LINK
+   ========================= */
+
+.client-link {
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.client-link:hover {
+  text-decoration: underline;
+  opacity: 0.8;
+}
+
+/* =========================
+   STATUS BADGES
+   ========================= */
+
+.task-status {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 50px;
+  display: inline-block;
+  width: fit-content;
+}
+
+/* OPEN */
+.task-status.open {
+  background: #e7f7ea;
+  color: #1f7a3a;
+  border: 1px solid #bde5c6;
+}
+
+/* IN PROGRESS */
+.task-status.in-progress {
+  background: #fff6e5;
+  color: #a66a00;
+  border: 1px solid #ffd89a;
+}
+
+/* COMPLETED */
+.task-status.completed {
+  background: #e7efff;
+  color: #1f4fd6;
+  border: 1px solid #b8ccff;
+}
+
+/* CANCELLED */
+.task-status.cancelled {
+  background: #fde8e8;
+  color: #b42318;
+  border: 1px solid #f5b5b5;
+}
+
+/* =========================
+   ACTION BUTTON
+   ========================= */
+
+.task-card .btn-ghost {
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* disabled state for clients */
+.task-card .btn-ghost:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}</style>
+</head>
+
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="logo">
+    Servily<span>.</span> <small><%= user.role %></small>
+  </a>
+
+  <div class="nav-links">
+    <a href="/tasks">Tasks</a>
+    <a href="/profile">Profile</a>
+  </div>
+
+  <div class="nav-cta">
+    <form action="/logout" method="POST">
+      <button class="btn-ghost">Logout</button>
+    </form>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<section class="section">
+  <div class="section-header">
+    <h2>Available Tasks</h2>
+  </div>
+</section>
+
+<!-- TASK GRID -->
+<section class="section">
+
+  <% if (!tasks || tasks.length === 0) { %>
+
+    <div class="hero-card">
+      <h3>No tasks available</h3>
+      <p>New tasks will appear here soon.</p>
+    </div>
+
+  <% } else { %>
+
+    <div class="task-grid">
+
+      <% tasks.forEach(task => { %>
+
+        <div class="task-card">
+
+          <!-- IMAGE -->
+          <div class="task-img">
+            <% if (task.image) { %>
+              <img src="<%= task.image %>" />
+            <% } else { %>
+              <div class="task-placeholder">
+                <%= task.name.charAt(0) %>
+              </div>
+            <% } %>
+          </div>
+
+          <!-- CONTENT -->
+          <div class="task-info">
+
+            <h3><%= task.name %></h3>
+
+            <p class="task-desc">
+              <%= task.description %>
+            </p>
+
+            <p class="task-location">
+              <%= task.baladiya %>, <%= task.wilaya %>
+            </p>
+
+            <p class="task-category">
+              <%= task.category %>
+            </p>
+
+            <!-- CLIENT LINK -->
+            <p class="task-category">
+              Client:
+              <% if (task.client) { %>
+                <a href="/client/<%= task.client._id %>" class="client-link">
+                  <%= task.client.firstName %> <%= task.client.lastName %>
+                </a>
+              <% } else { %>
+                Unknown
+              <% } %>
+            </p>
+
+            <!-- STATUS -->
+            <span class="task-status <%= (task.status || '').toLowerCase().replace(/ /g, '-') %>">
+              <%= task.status %>
+            </span>
+
+            <!-- ROLE-BASED ACTION -->
+            <% if (user.role === "worker") { %>
+
+              <button class="btn-ghost" style="width:100%; margin-top:10px;">
+                View Job
+              </button>
+
+            <% } else { %>
+
+              <button class="btn-ghost" style="width:100%; margin-top:10px;" disabled>
+                View Only
+              </button>
+
+            <% } %>
+
+          </div>
+
+        </div>
+
+      <% }) %>
+
+    </div>
+
+  <% } %>
+
+</section>
+
+</body>
+</html>

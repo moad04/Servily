@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Servily – Log In</title>
+    <link rel="stylesheet" href="login.css" />
+  </head>
+  <body> 
+    <% if (messages && messages.error) { %>
+      <div class="flash-message error">
+        <%= messages.error %>
+      </div>
+    <% } %>
+    <% if (messages && messages.success) { %>
+      <div class="flash-message success">
+        <%= messages.success %>
+      </div>
+    <% } %>
+
+    <!-- LEFT -->
+    <div class="left">
+      <div class="topbar">
+        <a href="/" class="logo">Servily<span>.</span></a>
+        <div class="lang-switcher">
+          <div class="lang-selected" onclick="toggleLang()">
+            <img src="https://flagcdn.com/w40/gb.png" alt="EN"/> ENGLISH <span class="lang-arrow">▼</span>
+          </div>
+          <div class="lang-dropdown" id="langDropdown">
+            <a href="/lang/en" class="active">
+              <img src="https://flagcdn.com/w40/gb.png" alt="EN"/> ENGLISH
+            </a>
+            <a href="/lang/fr">
+              <img src="https://flagcdn.com/w40/fr.png" alt="FR"/> FRANÇAIS
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="heading">
+        <h1>Welcome back</h1>
+        <p>Log in to your Servily account</p>
+      </div>
+
+      <form class="form" action="/login" method="POST">
+        <div class="field">
+          <label>Email</label>
+          <input type="email" name="email" value="<%= messages.email && messages.email[0] || '' %>" placeholder="you@example.com" required />
+        </div>
+
+        <div class="field">
+          <label>Password</label>
+          <input type="password" name="password" placeholder="••••••••" required />
+        </div>
+
+        <div class="forgot">
+          <a href="/forgot-password">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn-submit">Log In</button>
+
+        <p class="signup-link">
+          Don't have an account? <a href="/signup">Sign up</a>
+        </p>
+      </form>
+
+      <form action="/auth/google/login" method="get" id="googleForm">
+        <button type="submit" class="btn-google">
+          Sign in with Google
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"/>
+        </button>
+      </form>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right">
+      <div class="right-fallback">
+        <p class="right-tagline">
+          Thousands of professionals ready to help you.
+        </p>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".flash-message").forEach(msg => {
+          setTimeout(() => {
+            msg.style.display = "none";
+          }, 5000);
+        });
+      });
+
+      function toggleLang() {
+        const dropdown = document.getElementById("langDropdown");
+        const arrow = document.querySelector(".lang-arrow");
+        dropdown.classList.toggle("open");
+        arrow.textContent = dropdown.classList.contains("open") ? "▲" : "▼";
+      }
+    </script>
+  </body>
+</html>

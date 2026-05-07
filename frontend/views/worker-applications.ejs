@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Applications - Servily</title>
+  <link rel="stylesheet" href="/index.css" />
+  <style>
+    .applications-container {
+      max-width: 900px;
+      margin: 60px auto;
+      padding: 0 24px;
+    }
+    
+    .applications-header {
+      margin-bottom: 30px;
+    }
+    
+    .applications-header h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.8rem;
+    }
+    
+    .application-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      transition: transform 0.2s ease;
+    }
+    
+    .application-card:hover {
+      transform: translateY(-2px);
+    }
+    
+    .application-info {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .application-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .task-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 0;
+    }
+    
+    .client-name {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    
+    .status-badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 50px;
+      width: fit-content;
+      display: inline-block;
+    }
+    
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffd89a;
+    }
+    
+    .status-accepted {
+      background: #e7f7ea;
+      color: #1f7a3a;
+      border: 1px solid #bde5c6;
+    }
+    
+    .status-rejected {
+      background: #fde8e8;
+      color: #b42318;
+      border: 1px solid #f5b5b5;
+    }
+    
+    .proposed-price {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    
+    .message-box {
+      background: var(--bg);
+      padding: 12px;
+      border-radius: 12px;
+      margin-top: 8px;
+      border-left: 3px solid var(--text);
+      font-style: italic;
+      font-size: 0.85rem;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 60px;
+      background: var(--card-bg);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+    }
+    
+    .empty-state h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+    }
+    
+    .empty-state p {
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    
+    .empty-state a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    
+    .empty-state a:hover {
+      text-decoration: underline;
+    }
+    
+    .flash {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 16px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 500;
+      z-index: 9999;
+      animation: fadeInOut 4s ease forwards;
+    }
+    
+    @keyframes fadeInOut {
+      0% { opacity: 0; }
+      10% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { opacity: 0; visibility: hidden; }
+    }
+    
+    .flash.success { background: #22c55e; color: white; }
+    .flash.error { background: #ef4444; color: white; }
+  </style>
+</head>
+<body>
+
+  <% if (messages && messages.success) { %>
+    <div class="flash success"><%= messages.success %></div>
+  <% } %>
+  
+  <% if (messages && messages.error) { %>
+    <div class="flash error"><%= messages.error %></div>
+  <% } %>
+
+  <nav>
+    <a href="/" class="logo">
+      Servily<span>.</span> <small>Worker</small>
+    </a>
+    <div class="nav-links">
+      <a href="/tasks">Browse Tasks</a>
+      <a href="/profile">My Profile</a>
+      <a href="/application/worker-applications">My Applications</a>
+    </div>
+    <div class="nav-cta">
+      <form action="/logout" method="POST">
+        <button class="btn-ghost">Logout</button>
+      </form>
+    </div>
+  </nav>
+
+  <div class="applications-container">
+    <div class="applications-header">
+      <h1>My Applications</h1>
+    </div>
+    
+    <% if (applications && applications.length > 0) { %>
+      <% applications.forEach(app => { %>
+        <div class="application-card">
+          <div class="application-info">
+            <div class="application-header">
+              <div>
+                <div class="task-name"><%= app.task?.name %></div>
+                <div class="client-name">Client: <%= app.client?.firstName %> <%= app.client?.lastName %></div>
+              </div>
+              <span class="status-badge status-<%= app.status %>">
+                <%= app.status.toUpperCase() %>
+              </span>
+            </div>
+            
+            <div class="proposed-price">
+              Proposed Price: <%= app.proposedPrice %> DZD
+            </div>
+            
+            <div class="message-box">
+              "<%= app.message %>"
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    <% } else { %>
+      <div class="empty-state">
+        <h3>No applications yet</h3>
+        <p>When you apply for tasks, they will appear here.</p>
+        <a href="/tasks">Browse Tasks →</a>
+      </div>
+    <% } %>
+  </div>
+
+  <script>
+    setTimeout(() => {
+      const flash = document.querySelector('.flash');
+      if (flash) flash.style.display = 'none';
+    }, 4000);
+  </script>
+</body>
+</html>
