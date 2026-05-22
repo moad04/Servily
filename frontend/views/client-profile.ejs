@@ -154,7 +154,38 @@
       text-decoration: none;
       transition: color 0.2s, border-color 0.2s;
     }
-    .btn-delete:hover { color: #e00; border-color: #e00; }
+    .btn-delete:hover { color: #e00; border-color: #e00; } 
+
+   .availability-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 50px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-top: 8px;
+  margin-left: 8px;
+}
+
+.availability-badge.verified {
+  background: #e7f7ea;
+  color: #1f7a3a;
+  border: 1px solid #bde5c6;
+}
+
+.availability-badge.unverified {
+  background: #fde8e8;
+  color: #b42318;
+  border: 1px solid #f5b5b5;
+} 
+
+.availability-badge.pending {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffd89a;
+  cursor: default;
+}
 
   </style>
 </head>
@@ -189,8 +220,18 @@
       </div>
       <div class="profile-header-info">
         <h1><%= user.firstName %> <%= user.lastName %></h1>
-        <p><%= user.email %></p>
-        <span class="profile-badge">Client</span>
+        <p><%= user.email %></p> 
+        <span class="profile-badge">Client</span>  
+
+<% if (user.isIdVerified) { %>
+  <span class="availability-badge verified">Verified</span>
+<% } else if (user.idVerificationStatus === 'pending') { %>
+  <span class="availability-badge pending">Pending Verification</span>
+<% } else if (user.idVerificationStatus === 'rejected') { %>
+  <a href="/profile/verify-id" class="availability-badge unverified">Unverified - Click to Verify</a>
+<% } else { %>
+  <a href="/profile/verify-id" class="availability-badge unverified">Unverified - Click to Verify</a>
+<% } %>
       </div>
     </div>
 
@@ -225,7 +266,17 @@
           <span class="<%= user.location ? '' : 'empty' %>">
             <%= user.location || 'Not provided yet' %>
           </span>
-        </div> 
+        </div>  
+        <div class="profile-field full">
+  <label>Bio</label>
+  <div class="bio-text">
+    <% if (user.bio) { %>
+      <%= user.bio %>
+    <% } else { %>
+      <span class="empty">No bio provided</span>
+    <% } %>
+  </div>
+</div>
 <div class="profile-field full">
   <label>My Rating</label>
   <div style="display: flex; align-items: center; gap: 10px;">

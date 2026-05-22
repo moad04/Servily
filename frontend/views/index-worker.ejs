@@ -192,6 +192,112 @@
 .view-all-link:hover {
   background: var(--text);
   color: white;
+} 
+
+/* Inbox Dropdown Styles */
+.notification-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.inbox-link {
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s;
+  position: relative;
+}
+
+.inbox-link:hover {
+  color: var(--text);
+}
+
+.inbox-badge {
+  position: absolute;
+  top: -8px;
+  right: -12px;
+  background: #ef4444;
+  color: white;
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 50px;
+}
+
+.inbox-dropdown {
+  position: fixed !important;
+  top: 60px !important;
+  right: 20px !important;
+  width: 320px !important;
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+  z-index: 999999 !important;
+  overflow: hidden !important;
+}
+
+.inbox-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.inbox-header a {
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.inbox-header a:hover {
+  color: var(--text);
+}
+
+.inbox-list {
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.inbox-item {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.inbox-item:hover {
+  background: var(--bg);
+}
+
+.inbox-item.unread {
+  background: rgba(200, 240, 74, 0.1);
+  border-left: 3px solid var(--accent);
+}
+
+.inbox-message {
+  font-size: 0.85rem;
+  color: var(--text);
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.inbox-time {
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.inbox-empty,
+.inbox-loading {
+  padding: 20px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
 }
 
   </style>
@@ -230,7 +336,8 @@
       }
       setTimeout(() => {
         const popup = document.getElementById('rejectionPopup');
-        if (popup) popup.remove();
+        if (popup) popup.remove(); 
+
       }, 8000);
     </script>
   <% } %>
@@ -244,8 +351,13 @@
     <div class="nav-links">
       <a href="/tasks">Available Jobs</a>
       <a href="/profile">Profile</a>
-      <a href="#">Earnings</a>
-      <a href="/application/worker-applications">My applications</a>
+      <a href="/application/worker-applications">My applications</a> 
+       <div class="notification-wrapper">
+      <a href="#" class="inbox-link" onclick="toggleInbox(); return false;">
+        Inbox
+        <span id="inboxBadge" class="inbox-badge" style="display: none;">0</span>
+      </a>
+    </div>
     </div>
 
     <div class="nav-cta">
@@ -253,7 +365,18 @@
         <button class="btn-ghost">Logout</button>
       </form>
     </div>
-  </nav>
+  </nav> 
+
+  <div id="inboxDropdown" class="inbox-dropdown" style="display: none;">
+  <div class="inbox-header">
+    <span>Recent Notifications</span>
+    <a href="/inbox">View all</a>
+  </div>
+  <div id="inboxList" class="inbox-list">
+    <div class="inbox-loading">Loading...</div>
+  </div>
+</div>
+
 
   <!-- 1. JOB FEED -->
 <section class="section">
@@ -292,8 +415,12 @@
           <div class="task-info">
 
             <!-- TITLE -->
-            <h3><%= task.name %></h3>
-
+<div style="display: flex; justify-content: space-between; align-items: center;">
+  <h3><%= task.name %></h3>
+  <span style="background: var(--accent); padding: 4px 12px; border-radius: 50px; font-weight: bold;">
+    <%= task.wage%> DZD
+  </span>
+</div>
             <!-- DESCRIPTION -->
             <p class="task-desc">
               <%= task.description 
@@ -315,13 +442,18 @@
     <!-- CLIENT -->
 <p class="task-category">
   <strong>Posted by:</strong>
-  <div style="display: inline-flex; align-items: center; gap: 6px;">
+  <div style="display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap;">
     <div style="width: 22px; height: 22px; border-radius: 50%; background: var(--accent); display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold;">
       <%= task.client?.firstName?.charAt(0) || '?' %>
     </div>
-   <a href="/profile/<%= task.client?._id %>" class="client-link">
-     <%= task.client?.firstName %> <%= task.client?.lastName %>
+    <a href="/profile/<%= task.client?._id %>" class="client-link">
+      <%= task.client?.firstName %> <%= task.client?.lastName %>
     </a>
+    <% if (task.client?.isIdVerified) { %>
+      <span style="background: #e7f7ea; color: #1f7a3a; font-size: 0.65rem; font-weight: 600; padding: 2px 8px; border-radius: 50px; border: 1px solid #bde5c6;">
+        Verified
+      </span>
+    <% } %>
   </div>
 </p>
 
@@ -383,6 +515,107 @@
     </div>
 
   </section>
+<script>
+  // Helper function for time ago
+function getTimeAgo(date) {
+  const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+  
+  if (seconds < 60) return 'just now';
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes} min ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+  const days = Math.floor(hours / 24);
+  return `${days} day${days > 1 ? 's' : ''} ago`;
+}
 
+// Fetch inbox notifications
+async function loadInbox() {
+  try {
+    const response = await fetch('/inbox/recent');
+    const data = await response.json();
+    
+    const badge = document.getElementById('inboxBadge');
+    if (data.unreadCount > 0) {
+      badge.textContent = data.unreadCount;
+      badge.style.display = 'inline';
+    } else {
+      badge.style.display = 'none';
+    }
+    
+    const listContainer = document.getElementById('inboxList');
+    
+    if (data.notifications.length === 0) {
+      listContainer.innerHTML = '<div class="inbox-empty">No notifications</div>';
+      return;
+    }
+    
+    let html = '';
+    data.notifications.forEach(notif => {
+      const date = new Date(notif.createdAt);
+      const timeAgo = getTimeAgo(date);
+      
+      html += `
+        <div class="inbox-item ${notif.read ? '' : 'unread'}">
+          <div class="inbox-message">${notif.message}</div>
+          <div class="inbox-time">${timeAgo}</div>
+        </div>
+      `;
+    });
+    
+    listContainer.innerHTML = html;
+    
+    // Mark as read when dropdown opens
+    if (data.unreadCount > 0) {
+      await fetch('/inbox/mark-read', { method: 'POST' });
+      badge.style.display = 'none';
+    }
+    
+  } catch (error) {
+    console.error('Error loading inbox:', error);
+    document.getElementById('inboxList').innerHTML = '<div class="inbox-empty">Failed to load</div>';
+  }
+}
+
+// Toggle dropdown
+function toggleInbox() {
+  const dropdown = document.getElementById('inboxDropdown');
+  if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+    dropdown.style.display = 'block';
+    loadInbox();
+  } else {
+    dropdown.style.display = 'none';
+  }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+  const wrapper = document.querySelector('.notification-wrapper');
+  const dropdown = document.getElementById('inboxDropdown');
+  if (wrapper && !wrapper.contains(event.target) && dropdown && !dropdown.contains(event.target)) {
+    dropdown.style.display = 'none';
+  }
+});
+
+// Load unread count on page load
+async function loadUnreadCount() {
+  try {
+    const response = await fetch('/inbox/unread-count');
+    const data = await response.json();
+    const badge = document.getElementById('inboxBadge');
+    if (data.count > 0) {
+      badge.textContent = data.count;
+      badge.style.display = 'inline';
+    }
+  } catch (error) {
+    console.error('Error loading unread count:', error);
+  }
+}
+
+// Load on page load
+document.addEventListener('DOMContentLoaded', function() {
+  loadUnreadCount();
+});
+</script>
 </body>
 </html>

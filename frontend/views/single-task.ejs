@@ -198,15 +198,25 @@
         </span>
       </div>
 
-      <div class="task-actions">
-        <% if (user && user.role === "worker") { %>
-          <button class="btn-primary" onclick="openModal()">Apply for this job</button>
-        <% } %>
-
-        <% if (user && user._id.toString() === task.client._id.toString()) { %>
-          <a href="/tasks/my" style="color: var(--muted); text-decoration: none; font-size: 0.85rem;">Back to my tasks</a>
-        <% } %>
+<% if (user && user.role === "worker") { %>
+  <% if (userApplication) { %>
+    <% if (userApplication.status === 'accepted') { %>
+    <div style="background: #e7f7ea; color: #1f7a3a; padding: 8px 12px; border-radius: 8px; text-align: center; font-size: 0.85rem; margin-top: 10px;">
+   Accepted - The client will contact you
+</div>
+    <% } else if (userApplication.status === 'pending') { %>
+      <div style="background: #fff3cd; color: #856404; padding: 12px; border-radius: 12px; text-align: center;">
+        Your application is pending review.
       </div>
+    <% } else if (userApplication.status === 'rejected') { %>
+      <div style="background: #fde8e8; color: #b42318; padding: 12px; border-radius: 12px; text-align: center;">
+        Your application was rejected.
+      </div>
+    <% } %>
+  <% } else { %>
+    <button class="btn-primary" onclick="openModal()">Apply for this job</button>
+  <% } %>
+<% } %>
     </div>
   </div>
 
@@ -267,10 +277,7 @@
         <small style="color: var(--muted);">Tell the client why you're the right person for this job</small>
       </div>
       
-      <div style="margin-bottom: 20px;">
-        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Proposed Price (DZD)</label>
-        <input type="number" name="proposedPrice" required style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg); color: var(--text);">
-      </div>
+      
       
       <div style="display: flex; gap: 12px;">
         <button type="submit" style="background: var(--text); color: white; padding: 12px 24px; border: none; border-radius: 50px; cursor: pointer; font-weight: 600;">Submit Application</button>

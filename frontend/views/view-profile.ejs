@@ -298,7 +298,35 @@
         left: 10px;
         font-size: 0.8rem;
       }
-    }
+    } 
+    .verification-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 50px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-left: 8px;
+}
+
+.verification-badge.verified {
+  background: #e7f7ea;
+  color: #1f7a3a;
+  border: 1px solid #bde5c6;
+}
+
+.verification-badge.pending {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffd89a;
+}
+
+.verification-badge.unverified {
+  background: #fde8e8;
+  color: #b42318;
+  border: 1px solid #f5b5b5;
+}
   </style>
 </head>
 <body>
@@ -345,7 +373,14 @@
       <div class="profile-header-info">
         <h1><%= client.firstName %> <%= client.lastName %></h1>
         <p><%= client.email %></p>
-        <span class="profile-badge"><%= client.role || 'Member' %></span>
+        <span class="profile-badge"><%= client.role || 'Member' %></span>  
+          <% if (client.isIdVerified) { %>
+      <span class="verification-badge verified">Verified</span>
+    <% } else if (client.idVerificationStatus === 'pending') { %>
+      <span class="verification-badge pending">Pending</span>
+    <% } else { %>
+      <span class="verification-badge unverified">Unverified</span>
+    <% } %>
       </div>
     </div>
 

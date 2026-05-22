@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Servily – Find trusted professionals in Algeria</title>
+    <title>Servily – Find Trusted Local Professionals</title>
     <link rel="stylesheet" href="index.css" />
   </head>
   <body>
@@ -12,8 +12,8 @@
       <a href="/" class="logo">Servily<span>.</span></a>
       <div class="nav-links">
         <a href="#">How it works</a>
-        <a href="#">Categories</a>
-        <a href="#">Become a worker</a>
+        <a href="#">Services</a>
+        <a href="#">Support</a>
       </div>
       <div class="nav-cta">
         <a href="/login" class="btn-ghost">Log In</a>
@@ -23,36 +23,57 @@
 
     <!-- HERO -->
     <section class="hero">
+      <!-- LEFT SIDE -->
       <div class="hero-left">
-        <div class="hero-tag">Algeria's #1 Service Platform</div>
-        <h1>Get any task<br />done <em>fast</em> &<br />professionally</h1>
+        <div class="hero-tag">Verified Professionals</div>
+
+        <h1>Find reliable local workers for any job</h1>
+
         <p>
-          Connect with trusted local professionals for cleaning, repairs,
-          moving, and more — anywhere in Algeria.
+          Connect with trusted professionals for home repairs, maintenance,
+          moving, and technical help in your area.
         </p>
-        <div class="hero-actions">
-          <a href="/signup" class="btn-hero">Post a task for free</a>
-          <span class="hero-note">No subscription required</span>
+
+        <div class="hero-metrics-row">
+          <div class="metric-item">
+            <strong>100%</strong>
+            <span>ID Verified</span>
+          </div>
+
+          <div class="metric-item">
+            <strong>Fast</strong>
+            <span>Responses</span>
+          </div>
+
+          <div class="metric-item">
+            <strong>Free</strong>
+            <span>To Post</span>
+          </div>
         </div>
       </div>
 
-      <div class="hero-right">
-        <div class="hero-card tall">
-          <div class="card-icon">🔧</div>
-          <h3>Home Repairs</h3>
-          <p>
-            Plumbing, electricity, painting and more from verified
-            professionals.
-          </p>
-        </div>
-        <div class="hero-card accent-card">
-          <div class="stat">2.4k+</div>
-          <div class="stat-label">Active workers</div>
-        </div>
-        <div class="hero-card">
-          <div class="card-icon">⚡</div>
-          <h3>Fast matching</h3>
-          <p>Get offers within minutes.</p>
+      <!-- RIGHT SIDE -->
+      <div class="hero-search-wrapper">
+        <div class="hero-search-card">
+          <div class="search-top">
+            <span class="search-badge">Quick Search</span>
+            <h3>Find the right professional</h3>
+            <p>Search trusted workers near your area instantly.</p>
+          </div>
+
+          <div class="hero-search-panel">
+            <div class="search-field">
+              <span class="field-label">Service</span>
+              <input type="text" placeholder="Plumber, Electrician..." />
+            </div>
+
+            <div class="search-field">
+              <span class="field-label">Location</span>
+              <input type="text" placeholder="Choose your city" />
+            </div>
+
+            <button class="btn-search">Search Now</button>
+          </div>
         </div>
       </div>
     </section>
@@ -60,79 +81,79 @@
     <!-- CATEGORIES -->
     <section class="section">
       <div class="section-header">
-        <h2>Browse by category</h2>
-        <a href="/signup">See all →</a>
+        <h2>Browse popular services</h2>
+        <a href="/signup">See all categories →</a>
       </div>
       <div class="categories">
         <a href="/signup" class="cat-card">
-          <div class="cat-icon">🧹</div>
-          <div class="cat-name">Cleaning</div>
-          <div class="cat-count">120+ workers</div>
-        </a>
-        <a href="/signup" class="cat-card">
-          <div class="cat-icon">🔧</div>
+          <span class="cat-code">01</span>
           <div class="cat-name">Plumbing</div>
-          <div class="cat-count">85+ workers</div>
+          <div class="cat-count">340+ workers</div>
         </a>
         <a href="/signup" class="cat-card">
-          <div class="cat-icon">⚡</div>
+          <span class="cat-code">02</span>
           <div class="cat-name">Electricity</div>
-          <div class="cat-count">97+ workers</div>
+          <div class="cat-count">290+ workers</div>
         </a>
         <a href="/signup" class="cat-card">
-          <div class="cat-icon">🚚</div>
-          <div class="cat-name">Moving</div>
-          <div class="cat-count">64+ workers</div>
+          <span class="cat-code">03</span>
+          <div class="cat-name">Heating & AC</div>
+          <div class="cat-count">180+ workers</div>
         </a>
         <a href="/signup" class="cat-card">
-          <div class="cat-icon">🎨</div>
-          <div class="cat-name">Painting</div>
-          <div class="cat-count">73+ workers</div>
+          <span class="cat-code">04</span>
+          <div class="cat-name">Moving & Transport</div>
+          <div class="cat-count">210+ workers</div>
         </a>
         <a href="/signup" class="cat-card">
-          <div class="cat-icon">🌿</div>
-          <div class="cat-name">Gardening</div>
-          <div class="cat-count">41+ workers</div>
+          <span class="cat-code">05</span>
+          <div class="cat-name">Masonry & Painting</div>
+          <div class="cat-count">190+ workers</div>
         </a>
         <a href="/signup" class="cat-card">
-          <div class="cat-icon">💻</div>
-          <div class="cat-name">Tech Support</div>
-          <div class="cat-count">58+ workers</div>
+          <span class="cat-code">06</span>
+          <div class="cat-name">Carpentry</div>
+          <div class="cat-count">152 workers</div>
         </a>
         <a href="/signup" class="cat-card">
-          <div class="cat-icon">🛠️</div>
-          <div class="cat-name">Assembly</div>
-          <div class="cat-count">49+ workers</div>
+          <span class="cat-code">07</span>
+          <div class="cat-name">Home & Office Cleaning</div>
+          <div class="cat-count">420+ workers</div>
+        </a>
+        <a href="/signup" class="cat-card">
+          <span class="cat-code">08</span>
+          <div class="cat-name">Tech & IT Support</div>
+          <div class="cat-count">110+ workers</div>
         </a>
       </div>
     </section>
 
     <!-- HOW IT WORKS -->
     <section class="how">
-      <h2>How Servily works</h2>
+      <h2>How it works</h2>
       <div class="steps">
         <div class="step">
           <div class="step-num">01</div>
-          <h3>Post your task</h3>
+          <h3>Post a job</h3>
           <p>
-            Describe what you need done, where, and when. It takes less than 2
-            minutes.
+            Tell us what you need done, your location, and your schedule. It
+            takes less than two minutes.
           </p>
         </div>
         <div class="step">
           <div class="step-num">02</div>
-          <h3>Receive offers</h3>
+          <h3>Get quotes</h3>
           <p>
-            Verified workers send you offers with their price. Chat with them
-            before deciding.
+            Receive prices from available local workers. Chat with them, check
+            their profiles, and pick the best fit.
           </p>
         </div>
         <div class="step">
           <div class="step-num">03</div>
           <h3>Get it done</h3>
           <p>
-            Choose the best offer, pay securely, and get your task completed
-            professionally.
+            The worker completes the job as agreed. Confirm everything is
+            finished perfectly before leaving a review.
           </p>
         </div>
       </div>
@@ -140,17 +161,17 @@
 
     <!-- CTA -->
     <section class="cta">
-      <h2>Ready to get your first task done?</h2>
+      <h2>Ready to get your task done?</h2>
       <div class="cta-actions">
-        <a href="/signup" class="btn-hero">Post a task</a>
-        <a href="/signup" class="btn-ghost">Become a worker</a>
+        <a href="/signup" class="btn-hero">Post a Job</a>
+        <a href="/signup" class="btn-ghost">Become a Worker</a>
       </div>
     </section>
 
     <!-- FOOTER -->
     <footer>
       <a href="/" class="footer-logo">Servily<span>.</span></a>
-      <span>© 2025 Servily. All rights reserved.</span>
+      <span>© 2026 Servily. All rights reserved.</span>
     </footer>
   </body>
 </html>

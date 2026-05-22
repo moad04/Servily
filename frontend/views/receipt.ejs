@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Confirmation - Servily</title>
+  <link rel="stylesheet" href="/index.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .receipt-wrapper {
+      max-width: 800px;
+      margin: 60px auto;
+      padding: 0 24px;
+    }
+
+    /* RECEIPT CARD */
+    .receipt-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+
+    /* HEADER */
+    .receipt-header {
+      background: var(--text);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .receipt-header h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+    }
+
+    .receipt-header p {
+      opacity: 0.8;
+      font-size: 0.85rem;
+    }
+
+    .confirmation-badge {
+      display: inline-block;
+      background: #22c55e;
+      color: white;
+      padding: 6px 16px;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-top: 15px;
+    }
+
+    /* CONTENT */
+    .receipt-content {
+      padding: 30px;
+    }
+
+    /* SECTIONS */
+    .receipt-section {
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .receipt-section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .section-title {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    /* TWO COLUMN LAYOUT */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .info-block {
+      background: var(--bg);
+      padding: 16px;
+      border-radius: 12px;
+    }
+
+    .info-block h4 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+      letter-spacing: 0.05em;
+    }
+
+    .info-block p {
+      font-size: 0.95rem;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .info-block .label {
+      font-size: 0.7rem;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .info-block .value {
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+
+    /* TASK DETAILS */
+    .task-detail-row {
+      display: flex;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .task-detail-label {
+      width: 120px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .task-detail-value {
+      flex: 1;
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+
+    /* PRICE */
+    .price-block {
+      background: var(--accent);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .price-block .price-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text);
+      opacity: 0.7;
+    }
+
+    .price-block .price-amount {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-top: 5px;
+    }
+
+    /* FOOTER */
+    .receipt-footer {
+      background: var(--bg);
+      padding: 20px 30px;
+      text-align: center;
+      border-top: 1px solid var(--border);
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .btn-print {
+      background: var(--text);
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: opacity 0.2s;
+    }
+
+    .btn-print:hover {
+      opacity: 0.8;
+    }
+
+    .btn-back {
+      display: inline-block;
+      background: transparent;
+      border: 1px solid var(--border);
+      padding: 10px 24px;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      text-decoration: none;
+      color: var(--text);
+      margin-right: 12px;
+      transition: all 0.2s;
+    }
+
+    .btn-back:hover {
+      border-color: var(--text);
+    }
+
+    @media (max-width: 600px) {
+      .info-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      
+      .task-detail-row {
+        flex-direction: column;
+      }
+      
+      .task-detail-label {
+        width: 100%;
+        margin-bottom: 4px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="/" class="logo">
+      Servily<span>.</span> <small><%= user.role %></small>
+    </a>
+    <div class="nav-links">
+      <a href="/tasks">Browse Tasks</a>
+      <a href="/profile">My Profile</a>
+    </div>
+    <div class="nav-cta">
+      <form action="/logout" method="POST">
+        <button class="btn-ghost">Log out</button>
+      </form>
+    </div>
+  </nav>
+
+  <div class="receipt-wrapper">
+    <div class="receipt-card">
+      
+      <!-- HEADER -->
+      <div class="receipt-header">
+        <h1>Job Confirmation</h1>
+        <div class="confirmation-badge">✓ CONFIRMED</div>
+      </div>
+
+      <!-- CONTENT -->
+      <div class="receipt-content">
+        
+        <!-- TASK INFORMATION -->
+        <div class="receipt-section">
+          <div class="section-title">Job Details</div>
+          
+          <div class="task-detail-row">
+            <div class="task-detail-label">Job Title</div>
+            <div class="task-detail-value"><%= task.name %></div>
+          </div>
+          
+          <div class="task-detail-row">
+            <div class="task-detail-label">Category</div>
+            <div class="task-detail-value"><%= task.category %></div>
+          </div>
+          
+          <div class="task-detail-row">
+            <div class="task-detail-label">Description</div>
+            <div class="task-detail-value"><%= task.description %></div>
+          </div>
+          
+          <div class="task-detail-row">
+            <div class="task-detail-label">Location</div>
+            <div class="task-detail-value"><%= task.baladiya %>, <%= task.wilaya %></div>
+          </div>
+        </div>
+
+        <!-- PRICE -->
+        <div class="price-block">
+          <div class="price-label">Agreed Price</div>
+          <div class="price-amount"><%= task.wage %> DZD</div>
+        </div>
+
+        <!-- PARTIES INFORMATION -->
+        <div class="receipt-section">
+          <div class="section-title">Parties Information</div>
+          
+          <div class="info-grid">
+            <!-- CLIENT -->
+            <div class="info-block">
+              <h4>Client</h4>
+              <p><strong><%= task.client.firstName %> <%= task.client.lastName %></strong></p>
+              <p><span class="label">Email</span> <%= task.client.email %></p>
+              <% if (task.client.phone) { %>
+                <p><span class="label">Phone</span> <%= task.client.phone %></p>
+              <% } %>
+            </div>
+            
+            <!-- WORKER -->
+            <div class="info-block">
+              <h4>Service Provider</h4>
+              <p><strong><%= application.worker.firstName %> <%= application.worker.lastName %></strong></p>
+              <p><span class="label">Email</span> <%= application.worker.email %></p>
+              <% if (application.worker.phone) { %>
+                <p><span class="label">Phone</span> <%= application.worker.phone %></p>
+              <% } %>
+            </div>
+          </div>
+        </div>
+
+        <!-- APPLICATION DETAILS -->
+        <div class="receipt-section">
+          <div class="section-title">Application Details</div>
+          
+          <div class="task-detail-row">
+            <div class="task-detail-label">Worker's Message</div>
+            <div class="task-detail-value"><%= application.message %></div>
+          </div>
+          
+          <div class="task-detail-row">
+            <div class="task-detail-label">Application Date</div>
+            <div class="task-detail-value"><%= application.createdAt.toLocaleDateString() %></div>
+          </div>
+          
+          <div class="task-detail-row">
+            <div class="task-detail-label">Acceptance Date</div>
+            <div class="task-detail-value"><%= new Date().toLocaleDateString() %></div>
+          </div>
+        </div>
+
+        <!-- ACTIONS -->
+        <div style="text-align: center; margin-top: 20px;">
+          <a href="/tasks" class="btn-back">Back to Tasks</a>
+          <button class="btn-print" onclick="window.print()">Print Receipt</button>
+        </div>
+        
+      </div>
+
+      <!-- FOOTER -->
+      <div class="receipt-footer">
+        <p>This document serves as official confirmation of job assignment.</p>
+        <p>For any questions, contact Servily support.</p>
+      </div>
+      
+    </div>
+  </div>
+
+</body>
+</html>

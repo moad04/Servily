@@ -113,7 +113,12 @@
           <div class="edit-field">
             <label>Location</label>
             <input type="text" name="location" value="<%= user.location || '' %>"/>
-          </div>
+          </div> 
+
+          <div class="edit-field full">
+  <label>Bio</label>
+  <textarea name="bio" rows="4" placeholder="Tell others about yourself..."><%= user.bio || '' %></textarea>
+</div>
         </div>
       </div>
 

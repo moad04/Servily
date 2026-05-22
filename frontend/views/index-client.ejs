@@ -287,6 +287,111 @@
   background: #fde8e8;
   color: #b42318;
   border: 1px solid #f5b5b5;
+} 
+/* Inbox Dropdown Styles */
+.notification-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.inbox-link {
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s;
+  position: relative;
+}
+
+.inbox-link:hover {
+  color: var(--text);
+}
+
+.inbox-badge {
+  position: absolute;
+  top: -8px;
+  right: -12px;
+  background: #ef4444;
+  color: white;
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 50px;
+}
+
+.inbox-dropdown {
+  position: fixed !important;
+  top: 60px !important;
+  right: 200px !important;
+  width: 320px !important;
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+  z-index: 999999 !important;
+  overflow: hidden !important;
+}
+
+.inbox-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.inbox-header a {
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.inbox-header a:hover {
+  color: var(--text);
+}
+
+.inbox-list {
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.inbox-item {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.inbox-item:hover {
+  background: var(--bg);
+}
+
+.inbox-item.unread {
+  background: rgba(200, 240, 74, 0.1);
+  border-left: 3px solid var(--accent);
+}
+
+.inbox-message {
+  font-size: 0.85rem;
+  color: var(--text);
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.inbox-time {
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.inbox-empty,
+.inbox-loading {
+  padding: 30px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
 }
     </style>
   </head>
@@ -313,7 +418,7 @@
         transform: translateX(-50%) translateY(0);
         opacity: 1;
       }
-    }
+    } 
   </style>
   
   <script>
@@ -327,25 +432,40 @@
     }, 8000);
   </script>
 <% } %>
-
-    <nav>
-    <a href="/" class="logo">
-      Servily<span>.</span> <small>Client</small>
-    </a>
-    <div class="nav-links">
-      <a href="/tasks/my">My Tasks</a>
-      <a href="/profile">My Profile</a> 
-      <a href="/application/client-applications">My Applications</a>
-    </div> 
-    <div class="nav-cta">
-      <form action="/logout" method="POST">
-        <button class="btn-ghost">Logout</button>
-      </form>
+<%- include('partials/flash') %>
+ <nav>
+  <a href="/" class="logo">
+    Servily<span>.</span> <small>Client</small>
+  </a>
+  <div class="nav-links">
+    <a href="/tasks/my">My Tasks</a>
+    <a href="/profile">My Profile</a>   
+    <a href="/application/client-applications">My Applications</a> 
+    
+    <div class="notification-wrapper">
+      <a href="#" class="inbox-link" onclick="toggleInbox(); return false;">
+        Inbox
+        <span id="inboxBadge" class="inbox-badge" style="display: none;">0</span>
+      </a>
     </div>
-  </nav>
+  </div>
+  
+  <div class="nav-cta">
+    <form action="/logout" method="POST">
+      <button class="btn-ghost">Logout</button>
+    </form>
+  </div>
+</nav>
 
-
-
+<div id="inboxDropdown" class="inbox-dropdown" style="display: none;">
+  <div class="inbox-header">
+    <span>Recent Notifications</span>
+    <a href="/inbox">View all</a>
+  </div>
+  <div id="inboxList" class="inbox-list">
+    <div class="inbox-loading">Loading...</div>
+  </div>
+</div>
     <section class="hero">
 
   <div class="hero-left">
@@ -407,16 +527,21 @@
               <!-- INFO -->
               <div class="worker-info">
 
-                <div style="display: flex; align-items: center; gap: 8px;">
-                  <div style="width: 28px; height: 28px; border-radius: 50%; background: #1a1a1a; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">
-                    <%= worker.firstName.charAt(0) %>
-                  </div>
-                  <h3 style="margin: 0;">
-                    <a href="/profile/<%= worker._id %>" style="text-decoration: none; color: inherit;">
-                      <%= worker.firstName %> <%= worker.lastName %>
-                    </a>
-                  </h3>
-                </div>
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+  <div style="width: 28px; height: 28px; border-radius: 50%; background: #1a1a1a; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">
+    <%= worker.firstName.charAt(0) %>
+  </div>
+  <h3 style="margin: 0;">
+    <a href="/profile/<%= worker._id %>" style="text-decoration: none; color: inherit;">
+      <%= worker.firstName %> <%= worker.lastName %>
+    </a>
+  </h3>
+  <% if (worker.isIdVerified) { %>
+    <span style="background: #e7f7ea; color: #1f7a3a; font-size: 0.6rem; font-weight: 600; padding: 2px 8px; border-radius: 50px; border: 1px solid #bde5c6;">
+      Verified
+    </span>
+  <% } %>
+</div>
 
                 <!-- LOCATION (same as before) -->
                 <p class="worker-skills">
@@ -572,5 +697,108 @@
     });
   } 
 
+</script> 
+
+<script>
+async function loadInbox() {
+  try {
+    const response = await fetch('/inbox/recent');
+    const data = await response.json();
+    
+    const badge = document.getElementById('inboxBadge');
+    if (data.unreadCount > 0) {
+      badge.textContent = data.unreadCount;
+      badge.style.display = 'inline';
+    } else {
+      badge.style.display = 'none';
+    }
+    
+    const listContainer = document.getElementById('inboxList');
+    
+    if (data.notifications.length === 0) {
+      listContainer.innerHTML = '<div class="inbox-empty">No notifications</div>';
+      return;
+    }
+    
+    let html = '';
+    data.notifications.forEach(notif => {
+      const date = new Date(notif.createdAt);
+      const timeAgo = getTimeAgo(date);
+      
+      html += `
+        <div class="inbox-item ${notif.read ? '' : 'unread'}">
+          <div class="inbox-message">${notif.message}</div>
+          <div class="inbox-time">${timeAgo}</div>
+        </div>
+      `;
+    });
+    
+    listContainer.innerHTML = html;
+    
+    // Mark as read when dropdown opens
+    if (data.unreadCount > 0) {
+      await fetch('/inbox/mark-read', { method: 'POST' });
+      badge.style.display = 'none';
+    }
+    
+  } catch (error) {
+    console.error('Error loading inbox:', error);
+    document.getElementById('inboxList').innerHTML = '<div class="inbox-empty">Failed to load</div>';
+  }
+}
+
+function toggleInbox() { 
+  console.log("toggleInbox clicked");
+  const dropdown = document.getElementById('inboxDropdown'); 
+  console.log("dropdown element found:", dropdown);
+  console.log("Current display style:", dropdown.style.display);
+  
+  if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+    console.log("Opening dropdown...");
+    dropdown.style.display = 'block';
+    loadInbox();
+  } else {
+    console.log("Closing dropdown...");
+    dropdown.style.display = 'none';
+  }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+  const wrapper = document.querySelector('.notification-wrapper');
+  if (wrapper && !wrapper.contains(event.target)) {
+    document.getElementById('inboxDropdown').style.display = 'none';
+  }
+});
+
+// Helper function for time ago
+function getTimeAgo(date) {
+  const seconds = Math.floor((new Date() - date) / 1000);
+  
+  if (seconds < 60) return 'just now';
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes} min ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+  const days = Math.floor(hours / 24);
+  return `${days} day${days > 1 ? 's' : ''} ago`;
+}
+
+// Load unread count on page load
+async function loadUnreadCount() {
+  try {
+    const response = await fetch('/inbox/unread-count');
+    const data = await response.json();
+    const badge = document.getElementById('inboxBadge');
+    if (data.count > 0) {
+      badge.textContent = data.count;
+      badge.style.display = 'inline';
+    }
+  } catch (error) {
+    console.error('Error loading unread count:', error);
+  }
+}
+
+loadUnreadCount();
 </script>
 </html>

@@ -271,24 +271,28 @@
               Task: <%= app.task?.name %>
             </div>
             
-            <div class="proposed-price">
-              Proposed Price: <%= app.proposedPrice %> DZD
-            </div>
-            
+          
             <div class="message-box">
               "<%= app.message %>"
             </div>
             
             <% if (app.status === 'pending') { %>
               <div class="application-actions">
-                <form action="/applications/accept/<%= app._id %>" method="POST">
+                <form action="/application/accept/<%= app._id %>" method="POST">
                   <button type="submit" class="btn-accept">Accept</button>
                 </form>
                 <form action="/application/reject-application/<%= app._id %>" method="POST">
                   <button type="submit" class="btn-reject">Reject</button>
                 </form>
               </div>
-            <% } %>
+            <% } %> 
+            <% if (app.status === 'accepted') { %>
+  <div class="application-actions">
+    <a href="/tasks/receipt/<%= app.task?._id %>" class="btn-accept" style="text-decoration: none; display: inline-block; text-align: center;">
+      View Receipt
+    </a>
+  </div>
+<% } %>
           </div>
         </div>
       <% }) %>
