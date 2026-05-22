@@ -12,9 +12,10 @@ const taskSchema = new mongoose.Schema({
     enum: ["Open", "In progress", "Completed"],
     default: "Open",
   },
-  neededWorkers: { type: Number, default: 1, min: 1 },
+  neededWorkers: { type: Number },
   createdAt: { type: Date, default: Date.now },
   picture: { type: String },
+  wage: { type: Number, required: true },
 });
 
 const taskCollection = mongoose.model("Task", taskSchema);

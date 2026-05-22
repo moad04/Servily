@@ -3,7 +3,7 @@ const Client = require("../database/models/Client");
 const Worker = require("../database/models/Worker");
 const Task = require("../database/models/Task");
 const Rating = require("../database/models/Rating");
-
+const Notification = require("../database/models/Notification");
 exports.updateUser = async (req, res) => {
   try {
     const user = req.session.user || req.user;
@@ -31,6 +31,7 @@ exports.updateUser = async (req, res) => {
           location: location,
           profilePic: profilePicPath,
           phone: phone,
+          bio: bio,
         },
         { new: true },
       );
@@ -105,7 +106,7 @@ exports.getProfile = async (req, res) => {
     }
     if (!profileUser) {
       req.flash("error", "Profile not found");
-      return res.redirect("back");
+      return res.redirect("/");
     }
 
     // Check role and render appropriate template
@@ -134,6 +135,76 @@ exports.getProfile = async (req, res) => {
   } catch (error) {
     req.flash("error", "An error occured");
     console.log(error);
-    return res.redirect("back");
+    return res.redirect("/");
+  }
+};
+
+exports.UploadId = async (req, res) => {
+  try {
+    const user = req.session.user || req.user;
+    console.log("req.file:", req.file);
+    const {
+      idFirstName,
+      idLastName,
+      dateOfBirth,
+      placeOfBirth,
+      idNumber,
+      idType,
+    } = req.body;
+    if (!req.file) {
+      req.flash("error", "Please upload a photo!");
+      return res.redirect("/verify-id");
+    }
+    const idPhotoPath = `/uploads/id-photos/${req.file.filename}`;
+    await userCollection.findByIdAndUpdate(user._id, {
+      idPhoto: idPhotoPath,
+      idVerificationStatus: "pending",
+      idFirstName: idFirstName,
+      idLastName: idLastName,
+      idDateOfBirth: new Date(dateOfBirth),
+      idPlaceOfBirth: placeOfBirth,
+      idNumber: idNumber,
+      idType: idType,
+    });
+    await Notification.create({
+      userId: user._id,
+      type: "id_pending",
+      message: "Your ID has been submitted and is pending review",
+      read: false,
+    });
+    const admin = await userCollection.findOne({ isAdmin: true });
+    if (admin) {
+      await Notification.create({
+        userId: admin._id,
+        type: "new_id_request",
+        message: `${user.firstName} ${user.lastName} submitted an ID for verification`,
+        read: false,
+      });
+    }
+
+    req.flash("success", "Data sent succefully, it be reviewed very soon!");
+    return res.redirect(`/profile/${user._id}`);
+  } catch (error) {
+    req.flash("error", "Something went wrong");
+    console.log(error);
+    return res.redirect("/profile");
+  }
+};
+
+exports.getUploadPage = async (req, res) => {
+  try {
+    const user = req.session.user || req.user;
+    if (!user) {
+      req.flash("error", "Please log in");
+      return res.redirect("/profile");
+    }
+    res.render("verify-id", {
+      user: user,
+      messages: req.flash(),
+    });
+  } catch (error) {
+    req.flash("error", "Something went wrong!");
+    console.log(error);
+    return;
   }
 };

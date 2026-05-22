@@ -2,7 +2,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
-// ✅ define path ONCE
+// ✅ define path ONCE for profile pictures
 const uploadPath = path.join(__dirname, "../public/uploads/profile");
 
 // ✅ ensure folder exists
@@ -19,6 +19,25 @@ const storage = multer.diskStorage({
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
 
     cb(null, "profile-" + uniqueSuffix + path.extname(file.originalname));
+  },
+});
+
+// ✅ define path for ID photos
+const idUploadPath = path.join(__dirname, "../public/uploads/id-photos");
+
+// ✅ ensure ID folder exists
+if (!fs.existsSync(idUploadPath)) {
+  fs.mkdirSync(idUploadPath, { recursive: true });
+}
+
+const idStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    console.log("ID PHOTO UPLOAD");
+    cb(null, idUploadPath);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, "id-" + uniqueSuffix + path.extname(file.originalname));
   },
 });
 
@@ -43,4 +62,10 @@ const upload = multer({
   fileFilter,
 });
 
-module.exports = upload;
+const uploadId = multer({
+  storage: idStorage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter,
+});
+
+module.exports = { upload, uploadId };

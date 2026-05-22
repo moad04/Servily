@@ -13,5 +13,6 @@ Router.post(
   TaskController.editTask,
 );
 Router.get("/view-task/:id", TaskController.getSingleTask);
+Router.get("/receipt/:id", TaskController.getReceipt);
 
 module.exports = Router;

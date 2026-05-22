@@ -11,6 +11,10 @@ exports.createApplication = async (req, res) => {
       req.flash("error", "You need to log in to apply for this job!");
       return res.redirect("/login");
     }
+    if (!worker.isIdVerified) {
+      req.flash("error", "You cannot apply for tasks, Please verify your ID");
+      return res.redirect(`/tasks/view-task/${taskId}`);
+    }
 
     const task = await Task.findById(taskId);
     if (!task) {
@@ -37,7 +41,6 @@ exports.createApplication = async (req, res) => {
       task: taskId,
       worker: worker._id,
       client: task.client,
-      proposedPrice: proposedPrice,
       message: message,
       status: "pending",
     });
@@ -45,6 +48,7 @@ exports.createApplication = async (req, res) => {
       userId: task.client,
       type: "new_applications",
       read: false,
+      message: `${worker.firstName} ${worker.lastName} applied for "${task.name}"`,
     });
 
     req.flash("success", "Application submitted successfully!");
@@ -149,5 +153,42 @@ exports.getWorkerApplications = async (req, res) => {
     console.log(error);
     req.flash("error", "Something went wrong!");
     return res.redirect("/");
+  }
+};
+
+exports.acceptApplication = async (req, res) => {
+  try {
+    const { appId } = req.params;
+    const application = await Application.findById(appId)
+      .populate("worker", "firstName lastName")
+      .populate("task", "name client");
+    if (!application) {
+      req.flash("error", "Application cannot be found");
+      return res.redirect("/application/client-applications");
+    }
+    if (application.status !== "pending") {
+      req.flash("error", "You can only accept pending applications");
+      return res.redirect("/application/client-applications");
+    }
+    const task = await Task.findById(application.task._id);
+    task.neededWorkers = task.neededWorkers - 1;
+    if (task.neededWorkers === 0) {
+      task.status = "Completed";
+    }
+    await task.save();
+    application.status = "accepted";
+    await application.save();
+    req.flash("success", "Application accepted");
+    await Notification.create({
+      userId: application.worker._id,
+      type: "application_accepted",
+      message: `Your application for "${application.task.name}" has been accepted`,
+      read: false,
+    });
+    return res.redirect("/application/client-applications");
+  } catch (error) {
+    console.log(error);
+    req.flash("error", "Something went wrong!");
+    return res.redirect("/application/client-applications");
   }
 };

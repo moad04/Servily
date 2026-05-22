@@ -1,11 +1,16 @@
 const Task = require("../database/models/Task");
 const algeria = require("../config/algeria.json");
 const wilayas = [...new Set(algeria.map((item) => item.wilaya_name_ascii))];
+const Application = require("../database/models/Application");
 
 exports.createTask = async (req, res) => {
   try {
     const user = req.session.user || req.user;
     const userId = user._id;
+    if (!user.isIdVerified) {
+      req.flash("error", "You cannot post tasks, Please verify your ID!");
+      return res.redirect("/tasks/my");
+    }
     const newTask = await Task.create({
       name: req.body.name,
       description: req.body.description,
@@ -14,6 +19,7 @@ exports.createTask = async (req, res) => {
       baladiya: req.body.baladiya,
       neededWorkers: req.body.neededWorkers || 1,
       client: userId,
+      wage: req.body.wage,
     });
     req.flash("success", "Task Created succefully");
     return res.redirect("/tasks/my");
@@ -117,14 +123,71 @@ exports.getSingleTask = async (req, res) => {
     const taskId = req.params.id;
     const user = req.session.user || req.user;
     const task = await Task.findById(taskId).populate("client");
+    let userApplication = null;
+    if (user && user.role === "worker") {
+      userApplication = await Application.findOne({
+        task: taskId,
+        worker: user._id,
+      });
+    }
     if (!task) {
       req.flash("error", "Task Doesn't exist!");
       return res.redirect("");
     }
-    return res.render("single-task", { user, task, messages: req.flash() });
+    return res.render("single-task", {
+      user,
+      task,
+      userApplication,
+      messages: req.flash(),
+    });
   } catch (error) {
     console.log(error);
     req.flash("error", "An error occured");
-    return res.redirect(" ");
+    return res.redirect("/");
+  }
+};
+
+exports.getReceipt = async (req, res) => {
+  try {
+    const taskId = req.params.id;
+    console.log("Task ID received:", req.params.id);
+    const user = req.session.user || req.user;
+    const task = await Task.findById(taskId).populate(
+      "client",
+      "firstName lastName email phone",
+    );
+    console.log("Task found:", task ? "YES" : "NO");
+    console.log("Task name:", task ? task.name : "N/A");
+    console.log("Task status:", task ? task.status : "N/A");
+    if (!task) {
+      req.flash("error", "Task not found");
+      return res.redirect("/application/client-applications");
+    }
+    const acceptedApplication = await Application.findOne({
+      task: taskId,
+      status: "accepted",
+    }).populate("worker", "firstName lastName email phone");
+
+    if (!acceptedApplication) {
+      req.flash("error", "No accepted application found");
+      return res.redirect("/application/client-applications");
+    }
+    if (
+      user._id.toString() !== task.client._id.toString() &&
+      user._id.toString() !== acceptedApplication.worker._id.toString()
+    ) {
+      req.flash("error", "You don't have access to this receipt");
+      return res.redirect("/tasks");
+    }
+    res.render("receipt", {
+      task,
+      application: acceptedApplication,
+      user,
+      messages: req.flash(),
+    });
+  } catch (error) {
+    console.log(error);
+    req.flash("error", "An error occured");
+    return res.redirect("/application/client-applications");
   }
 };

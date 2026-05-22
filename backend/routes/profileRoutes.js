@@ -4,7 +4,7 @@ const Rating = require("../database/models/Rating");
 
 const profileController = require("../controllers/profileController");
 const skillsList = require("../config/skills");
-const upload = require("../config/upload");
+const { upload, uploadId } = require("../config/upload");
 Router.get("/", async (req, res) => {
   try {
     const user = req.session.user || req.user;
@@ -50,8 +50,16 @@ Router.route("/edit")
   })
   .post(upload.single("profilePic"), profileController.updateUser);
 
-Router.get("/:id", profileController.getProfile);
-
 Router.post("/deleteProfile", profileController.deleteUser);
+
+Router.get("/verify-id", profileController.getUploadPage);
+
+Router.post(
+  "/upload-id",
+  uploadId.single("idPhoto"),
+  profileController.UploadId,
+);
+
+Router.get("/:id", profileController.getProfile);
 
 module.exports = Router;

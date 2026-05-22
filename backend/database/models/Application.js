@@ -17,10 +17,7 @@ const applicationSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
-  proposedPrice: {
-    type: Number,
-    required: true,
-  },
+
   message: {
     type: String,
     required: true,

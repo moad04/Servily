@@ -9,5 +9,6 @@ Router.post(
   applicationController.rejectApplication,
 );
 Router.get("/worker-applications", applicationController.getWorkerApplications);
+Router.post("/accept/:appId", applicationController.acceptApplication);
 
 module.exports = Router;

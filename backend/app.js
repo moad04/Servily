@@ -7,6 +7,8 @@ const profileRoutes = require("./routes/profileRoutes");
 const taskRoutes = require("./routes/taskRoutes");
 const ratingRoutes = require("./routes/ratingRoutes");
 const applicationRoutes = require("./routes/applicationRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+const InboxRoutes = require("./routes/inboxRoutes");
 const passport = require("passport");
 const session = require("express-session");
 const flash = require("connect-flash");
@@ -52,6 +54,8 @@ app.use("/profile", profileRoutes);
 app.use("/tasks", taskRoutes);
 app.use("/rating", ratingRoutes);
 app.use("/application", applicationRoutes);
+app.use("/admin", adminRoutes);
+app.use("/inbox", InboxRoutes);
 
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
